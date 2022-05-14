@@ -8,6 +8,8 @@ var geometry, material, mesh;
 
 var ball;
 
+var clock = new THREE.Clock();
+
 function addTableLeg(obj, x, y, z) {
     'use strict';
                                     //x (vermelho) , z(verde), y(azul) 
@@ -45,11 +47,13 @@ function createBall(x, y, z) {
 function addSphere(obj, x, y, z) {
     'use strict';
     
+    //material.color = 0xdd00cc;
+
     // ball = new THREE.Object3D();
     //ball.userData = { jumping: true, step: 0 };
     
     // material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
-    geometry = new THREE.SphereGeometry(5, 0, 0);
+    geometry = new THREE.SphereGeometry(5, 10, 10);
     mesh = new THREE.Mesh(geometry, material);
     
     // ball.add(mesh);
@@ -60,6 +64,7 @@ function addSphere(obj, x, y, z) {
 
 function addCube(obj, x, y, z) {
     'use strict';
+    //material.color = 0x1100cc;
                                     //x (vermelho) , z(verde), y(azul) 
     geometry = new THREE.CubeGeometry(5, 5, 5);
     mesh = new THREE.Mesh(geometry, material);
@@ -67,20 +72,27 @@ function addCube(obj, x, y, z) {
     obj.add(mesh);
 }
 
+function addRectangle(obj, x, y, z) {
+    'use strict';
+    //material.color = 0x1100cc;
+                                    //x (vermelho) , z(verde), y(azul) 
+    geometry = new THREE.CubeGeometry(3, 6, 3);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
 function addPyramid(obj, x, y, z) {
     'use strict';
+    //material.color = 0xffffff;
                                     //x (vermelho) , z(verde), y(azul) 
     geometry = new THREE.TetrahedronGeometry(3);
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y, z);
     
-    //Create a matrix
-    var matrix = new THREE.Matrix4();
-    //Rotate the matrix
-    matrix.makeRotationY(Math.PI / 2);
-
-    //rotate the object using the matrix
-    mesh.position.applyMatrix4(matrix);
+    mesh.rotation.y = Math.PI / 4;
+    mesh.rotation.x = Math.PI;
+    // mesh.rotation.x = Math.PI;
     
     obj.add(mesh);
 }
@@ -92,10 +104,11 @@ function createKadinsky(x, y, z){
     
     material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
    
-    addSphere(kadinsky, 15, 19.625, 2.5);
+    addSphere(kadinsky, 15, 19.625, -2.5);
     addCube(kadinsky, 10, 15, 2.5);
-    addPyramid(kadinsky, 0, 0, 0);
-    
+    // addPyramid(kadinsky, 7.5, 11.2, 5);
+    addRectangle(kadinsky, 6, 9.5, 6.5);    
+
     scene.add(kadinsky);
     
     kadinsky.position.x = x;
@@ -132,7 +145,7 @@ function createScene() {
 
     scene.add(new THREE.AxisHelper(10));
     
-    createKadinsky(1, 0, 1);
+    createKadinsky(0, 0, 0);
     //createTable(0, 8, 0);
 }
 
@@ -150,7 +163,7 @@ function createCamera() {
 
 function createCamera_xy() {
     'use strict';
-    camera = new THREE.OrthographicCamera( 0, 100, 100, 0, 1, 1000 );
+    camera = new THREE.OrthographicCamera( -20, 50, 50, -20, 1, 1000 );
     // camera = new THREE.PerspectiveCamera(70,
     //                                      window.innerWidth / window.innerHeight,
     //                                      1,
@@ -158,6 +171,19 @@ function createCamera_xy() {
     camera.position.x = 0;
     camera.position.y = 0;
     camera.position.z = 100;
+    camera.lookAt(scene.position);
+}
+
+function createCamera_xz() {
+    'use strict';
+    camera = new THREE.OrthographicCamera( -20, 50, 50, -20, 1, 1000 );
+    // camera = new THREE.PerspectiveCamera(70,
+    //                                      window.innerWidth / window.innerHeight,
+    //                                      1,
+    //                                      1000);
+    camera.position.x = 0;
+    camera.position.y = 100;
+    camera.position.z = 0;
     camera.lookAt(scene.position);
 }
 
@@ -177,6 +203,26 @@ function onKeyDown(e) {
     'use strict';
     
     switch (e.keyCode) {
+    case 49: //1
+        createCamera();
+        render();
+        break;
+    case 50: //2
+        createCamera_xy();
+        render();
+        break;
+    case 51: //3
+        createCamera_xz();
+        render();
+        break;
+    case 52: //4
+        scene.traverse(function (node) {
+            if (node instanceof THREE.Mesh) {
+                node.material.wireframe = !node.material.wireframe;
+            }
+        });
+        render();
+        break;
     case 65: //A
     case 97: //a
         scene.traverse(function (node) {
