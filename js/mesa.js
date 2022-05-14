@@ -1,5 +1,7 @@
 /*global THREE, requestAnimationFrame, console*/
 
+const { OrthographicCamera } = require("./three");
+
 var camera, scene, renderer;
 
 var geometry, material, mesh;
@@ -8,8 +10,8 @@ var ball;
 
 function addTableLeg(obj, x, y, z) {
     'use strict';
-
-    geometry = new THREE.CubeGeometry(2, 6, 2);
+                                    //x (vermelho) , z(verde), y(azul) 
+    geometry = new THREE.CubeGeometry(0, 5, 5);
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y - 3, z);
     obj.add(mesh);
@@ -27,10 +29,10 @@ function createBall(x, y, z) {
     'use strict';
     
     ball = new THREE.Object3D();
-    ball.userData = { jumping: true, step: 0 };
+    //ball.userData = { jumping: true, step: 0 };
     
     material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
-    geometry = new THREE.SphereGeometry(4, 10, 10);
+    geometry = new THREE.SphereGeometry(5, 0, 0);
     mesh = new THREE.Mesh(geometry, material);
     
     ball.add(mesh);
@@ -39,6 +41,68 @@ function createBall(x, y, z) {
     scene.add(ball);
 }
 
+
+function addSphere(obj, x, y, z) {
+    'use strict';
+    
+    // ball = new THREE.Object3D();
+    //ball.userData = { jumping: true, step: 0 };
+    
+    // material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+    geometry = new THREE.SphereGeometry(5, 0, 0);
+    mesh = new THREE.Mesh(geometry, material);
+    
+    // ball.add(mesh);
+    mesh.position.set(x, y, z);
+    
+    obj.add(mesh)
+}
+
+function addCube(obj, x, y, z) {
+    'use strict';
+                                    //x (vermelho) , z(verde), y(azul) 
+    geometry = new THREE.CubeGeometry(5, 5, 5);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addPyramid(obj, x, y, z) {
+    'use strict';
+                                    //x (vermelho) , z(verde), y(azul) 
+    geometry = new THREE.TetrahedronGeometry(3);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y, z);
+    
+    //Create a matrix
+    var matrix = new THREE.Matrix4();
+    //Rotate the matrix
+    matrix.makeRotationY(Math.PI / 2);
+
+    //rotate the object using the matrix
+    mesh.position.applyMatrix4(matrix);
+    
+    obj.add(mesh);
+}
+
+function createKadinsky(x, y, z){
+    'use strict';
+
+    var kadinsky = new THREE.Object3D();
+    
+    material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+   
+    addSphere(kadinsky, 15, 19.625, 2.5);
+    addCube(kadinsky, 10, 15, 2.5);
+    addPyramid(kadinsky, 0, 0, 0);
+    
+    scene.add(kadinsky);
+    
+    kadinsky.position.x = x;
+    kadinsky.position.y = y;
+    kadinsky.position.z = z;
+
+}
 
 function createTable(x, y, z) {
     'use strict';
@@ -68,8 +132,8 @@ function createScene() {
 
     scene.add(new THREE.AxisHelper(10));
     
-    createTable(0, 8, 0);
-    createBall(0, 0, 15);
+    createKadinsky(1, 0, 1);
+    //createTable(0, 8, 0);
 }
 
 function createCamera() {
@@ -84,15 +148,28 @@ function createCamera() {
     camera.lookAt(scene.position);
 }
 
+function createCamera_xy() {
+    'use strict';
+    camera = new THREE.OrthographicCamera( 0, 100, 100, 0, 1, 1000 );
+    // camera = new THREE.PerspectiveCamera(70,
+    //                                      window.innerWidth / window.innerHeight,
+    //                                      1,
+    //                                      1000);
+    camera.position.x = 0;
+    camera.position.y = 0;
+    camera.position.z = 100;
+    camera.lookAt(scene.position);
+}
+
 function onResize() {
     'use strict';
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     
-    /*if (window.innerHeight > 0 && window.innerWidth > 0) {
+    if (window.innerHeight > 0 && window.innerWidth > 0) {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
-    }*/
+    }
 
 }
 
