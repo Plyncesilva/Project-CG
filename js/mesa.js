@@ -6,6 +6,8 @@ var camera, scene, renderer;
 
 var geometry, material, mesh;
 
+var sphere_material, cube_material, rectangle_material;
+
 var ball;
 
 var clock = new THREE.Clock();
@@ -54,7 +56,7 @@ function addSphere(obj, x, y, z) {
     
     // material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
     geometry = new THREE.SphereGeometry(5, 10, 10);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, sphere_material);
     
     // ball.add(mesh);
     mesh.position.set(x, y, z);
@@ -67,7 +69,7 @@ function addCube(obj, x, y, z) {
     //material.color = 0x1100cc;
                                     //x (vermelho) , z(verde), y(azul) 
     geometry = new THREE.CubeGeometry(5, 5, 5);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, cube_material);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
@@ -77,7 +79,7 @@ function addRectangle(obj, x, y, z) {
     //material.color = 0x1100cc;
                                     //x (vermelho) , z(verde), y(azul) 
     geometry = new THREE.CubeGeometry(3, 6, 3);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, rectangle_material);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
@@ -102,7 +104,9 @@ function createKadinsky(x, y, z){
 
     var kadinsky = new THREE.Object3D();
     
-    material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    sphere_material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    cube_material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+    rectangle_material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
    
     addSphere(kadinsky, 15, 19.625, -2.5);
     addCube(kadinsky, 10, 15, 2.5);
@@ -163,7 +167,7 @@ function createCamera() {
 
 function createCamera_xy() {
     'use strict';
-    camera = new THREE.OrthographicCamera( -20, 50, 50, -20, 1, 1000 );
+    camera = new THREE.OrthographicCamera( -10, 40, 50, -20, 1, 1000 );
     // camera = new THREE.PerspectiveCamera(70,
     //                                      window.innerWidth / window.innerHeight,
     //                                      1,
@@ -176,7 +180,7 @@ function createCamera_xy() {
 
 function createCamera_xz() {
     'use strict';
-    camera = new THREE.OrthographicCamera( -20, 50, 50, -20, 1, 1000 );
+    camera = new THREE.OrthographicCamera( -10, 40, 20, -20, 1, 1000 );
     // camera = new THREE.PerspectiveCamera(70,
     //                                      window.innerWidth / window.innerHeight,
     //                                      1,
