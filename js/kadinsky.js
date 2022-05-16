@@ -157,55 +157,60 @@ function createScene() {
     createKadinsky(0, 0, 0);
 }
 
-function createCamera() {
-    'use strict';
-    camera = new THREE.PerspectiveCamera(70,
-                                         window.innerWidth / window.innerHeight,
-                                         1,
-                                         1000);
-    camera.position.x = 50;
-    camera.position.y = 50;
-    camera.position.z = 50;
+
+function createCamera(x, y, z){
+    camera = new THREE.OrthographicCamera(window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / - 20 );
+    
+    camera.position.x = x;
+    camera.position.y = y;
+    camera.position.z = z;
     camera.lookAt(scene.position);
+
+    return camera
 }
 
 function createCameras() {
     'use strict';
 
-    camera0 = new THREE.PerspectiveCamera(70,
-                                          window.innerWidth / window.innerHeight,
-                                              1,
-                                              1000);
+    camera1 = createCamera(20, 20, 20);
+    camera2 = createCamera(0, 0, 100)
+    camera3 = createCamera(0, 100, 0)
 
-                                              camera0.position.x = 0;
-                                              camera0.position.y = 100;
-                                              camera0.position.z = 0;
-                                              camera0.lookAt(scene.position);
-    camera1 = new THREE.OrthographicCamera(window.innerWidth / - 10, window.innerWidth / 10, window.innerHeight / 10, window.innerHeight / - 10);
-    camera2 =new THREE.OrthographicCamera( window.innerWidth / - 4, window.innerWidth / 4, window.innerHeight / 4, window.innerHeight / - 4 );
-    camera3 = new THREE.OrthographicCamera( window.innerWidth / - 4, window.innerWidth / 4, window.innerHeight / 4, window.innerHeight / - 4 );
+    // camera0 = new THREE.PerspectiveCamera(70,
+    //                                       window.innerWidth / window.innerHeight,
+    //                                           1,
+    //                                           1000);
 
-    camera1.position.x = 50;
-    camera1.position.y = 50;
-    camera1.position.z = 50;
-    camera1.lookAt(scene.position);
+    //                                           camera0.position.x = 0;
+    //                                           camera0.position.y = 100;
+    //                                           camera0.position.z = 0;
+    //                                           camera0.lookAt(scene.position);
+    // camera1 = new THREE.OrthographicCamera(window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2 );
+    // camera2 =new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2 );
+    // camera3 = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2 );
+
+    // camera1.position.x = 50;
+    // camera1.position.y = 50;
+    // camera1.position.z = 50;
+    // camera1.lookAt(scene.position);
 
   
-    camera2.position.x = 0;
-    camera2.position.y = 0;
-    camera2.position.z = 100;
-    camera2.lookAt(scene.position);
+    // camera2.position.x = 0;
+    // camera2.position.y = 0;
+    // camera2.position.z = 100;
+    // camera2.lookAt(scene.position);
 
-    camera3.position.x = 0;
-    camera3.position.y = 100;
-    camera3.position.z = 0;
-    camera3.lookAt(scene.position);
+    // camera3.position.x = 0;
+    // camera3.position.y = 100;
+    // camera3.position.z = 0;
+    // camera3.lookAt(scene.position);
     
-    scene.add(camera0);
     scene.add(camera1);
+    scene.add(camera2);
+    scene.add(camera3);
 
 
-    camera = camera0;
+    camera = camera1;
 }
 /*
 function createCamera_xz() {
@@ -249,14 +254,16 @@ function checkRotate() {
 function onResize() {
     'use strict';
 
-    
-    if (window.innerHeight > 0 && window.innerWidth > 0) {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        
-    }
-    
     renderer.setSize(window.innerWidth, window.innerHeight);
+
+    if (window.innerHeight > 0 && window.innerWidth > 0) {
+        camera.left = window.innerWidth / - 20;
+        camera.right = window.innerWidth / 20;
+        camera.top = window.innerHeight / 20;
+        camera.bottom = window.innerHeight / - 20;
+        camera.updateProjectionMatrix();
+    }
+
 }
 
 function onKeyDown(e) {
