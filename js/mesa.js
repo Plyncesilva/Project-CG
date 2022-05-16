@@ -7,6 +7,9 @@ var camera, scene, renderer;
 var geometry, material, mesh;
 
 var ball;
+var rotateBallLeft = false, rotateBallRight = false;
+
+var kadinsky;
 
 var clock = new THREE.Clock();
 
@@ -100,7 +103,7 @@ function addPyramid(obj, x, y, z) {
 function createKadinsky(x, y, z){
     'use strict';
 
-    var kadinsky = new THREE.Object3D();
+    kadinsky = new THREE.Object3D();
     
     material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
    
@@ -146,6 +149,8 @@ function createScene() {
     scene.add(new THREE.AxisHelper(10));
     
     createKadinsky(0, 0, 0);
+    //15, 19.625, -2.5
+    //createKadinsky(15, 19.625, -2.5);
     //createTable(0, 8, 0);
 }
 
@@ -187,6 +192,23 @@ function createCamera_xz() {
     camera.lookAt(scene.position);
 }
 
+
+function checkRotate() {
+    'use strict';
+
+    if(rotateBallLeft){
+        // 15, 19.625, -2.5);
+        kadinsky.position.set(-15,-19.625,+2.5);
+        kadinsky.rotateX(1);
+        
+
+    }
+
+    if(rotateBallRight)
+        kadinsky.rotateX(-1);    
+    
+}
+
 function onResize() {
     'use strict';
 
@@ -223,6 +245,20 @@ function onKeyDown(e) {
         });
         render();
         break;
+  
+    //controlar  angulo θ1 que roda todo o objecto
+    case 81: //Q
+    case 113: //q
+        rotateBallLeft=true;
+        break;
+    
+    case 87: //W
+    case 119: //w
+        rotateBallRight=true;
+        break;
+
+    
+    // controlar o angulo θ2 de um ramo secundario
     case 65: //A
     case 97: //a
         scene.traverse(function (node) {
@@ -235,6 +271,16 @@ function onKeyDown(e) {
     case 115: //s
         ball.userData.jumping = !ball.userData.jumping;
         break;
+
+    //controlar o ângulo θ3 de um ramo terciario.
+    case 90: // Z
+    case 122: //z
+        break;
+
+    case 88: //X
+    case 120: //x
+        break;
+       
     case 69:  //E
     case 101: //e
         scene.traverse(function (node) {
@@ -243,7 +289,30 @@ function onKeyDown(e) {
             }
         });
         break;
+
     }
+
+    
+}
+
+
+function onKeyUp(e) {
+    'use strict';
+        
+    switch (e.keyCode) {
+    //controlar  angulo θ1 que roda todo o objecto
+    case 81: //Q
+    case 113: //q
+        rotateBallLeft=false;
+        break;
+    
+    case 87: //W
+    case 119: //w
+        rotateBallRight=false;
+        break;
+    }
+
+
 }
 
 function render() {
@@ -265,17 +334,20 @@ function init() {
     render();
     
     window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
     window.addEventListener("resize", onResize);
 }
 
 function animate() {
     'use strict';
-    
+
+    checkRotate();
+    /*
     if (ball.userData.jumping) {
         ball.userData.step += 0.04;
         ball.position.y = Math.abs(30 * (Math.sin(ball.userData.step)));
         ball.position.z = 15 * (Math.cos(ball.userData.step));
-    }
+    }*/
     render();
     
     requestAnimationFrame(animate);
