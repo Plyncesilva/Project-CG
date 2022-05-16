@@ -219,34 +219,46 @@ function onKeyDown(e) {
     //controlar  angulo θ1 que roda todo o objecto
     case 81: //Q
     case 113: //q
-        rotateBallLeft=true;
+        if (rotateBallRight)
+            rotateBallRight = false;
+        rotateBallLeft = !rotateBallLeft;
         break;
     
     case 87: //W
     case 119: //w
-        rotateBallRight=true;
+        if (rotateBallLeft)
+            rotateBallLeft = false;
+        rotateBallRight = !rotateBallRight;
         break;
 
     
     // controlar o angulo θ2 de um ramo secundario
     case 65: //A
     case 97: //a
-        rotateCubeLeft = true;
+        if (rotateCubeRight)
+            rotateCubeRight = false;
+        rotateCubeLeft = !rotateCubeLeft;
         break;
     case 83:  //S
     case 115: //s
-        rotateCubeRight = true;
+        if (rotateCubeLeft)
+            rotateCubeLeft = false;
+        rotateCubeRight = !rotateCubeRight;
         break;
 
     //controlar o ângulo θ3 de um ramo terciario.
     case 90: // Z
     case 122: //z
-        rotateRectangleLeft = true;
+        if(rotateRectangleRight)
+            rotateRectangleRight = false;
+        rotateRectangleLeft = !rotateRectangleLeft;
         break;
 
     case 88: //X
     case 120: //x
-        rotateRectangleRight = true;
+        if (rotateRectangleLeft)
+            rotateRectangleLeft = false;
+        rotateRectangleRight = !rotateRectangleRight;
         break;
 
         
@@ -343,7 +355,7 @@ function init() {
     render();
     
     window.addEventListener("keydown", onKeyDown);
-    window.addEventListener("keyup", onKeyUp);
+    // window.addEventListener("keyup", onKeyUp);
     window.addEventListener("resize", onResize);
 }
 
