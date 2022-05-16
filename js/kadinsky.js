@@ -21,16 +21,9 @@ var clock;
 function addSphere(obj, x, y, z) {
     'use strict';
     
-    //material.color = 0xdd00cc;
-
-    // ball = new THREE.Object3D();
-    //ball.userData = { jumping: true, step: 0 };
-    
-    // material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
     geometry = new THREE.SphereGeometry(2.5, 10, 10);
     mesh = new THREE.Mesh(geometry, sphere_material);
     
-    // ball.add(mesh);
     mesh.position.set(x, y, z);
     
     obj.add(mesh)
@@ -55,21 +48,6 @@ function addRectangle(obj, x, y, z) {
     geometry = new THREE.CubeGeometry(3, 6, 3);
     mesh = new THREE.Mesh(geometry, rectangle_material);
     mesh.position.set(x, y, z);
-    obj.add(mesh);
-}
-
-function addPyramid(obj, x, y, z) {
-    'use strict';
-    //material.color = 0xffffff;
-                                    //x (vermelho) , z(verde), y(azul) 
-    geometry = new THREE.TetrahedronGeometry(3);
-    mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(x, y, z);
-    
-    mesh.rotation.y = Math.PI / 4;
-    mesh.rotation.x = Math.PI;
-    // mesh.rotation.x = Math.PI;
-    
     obj.add(mesh);
 }
 
@@ -124,15 +102,8 @@ function createKadinsky(x, y, z){
     kadinsky = new THREE.Object3D();
     
     sphere_material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-    //cube_material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
-    //rectangle_material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
-   
-    //addSphere(kadinsky, 15, 19.625, -2.5);
-    //addCube(kadinsky, 10, 15, 2.5);
-    // addPyramid(kadinsky, 7.5, 11.2, 5);
-    //addRectangle(kadinsky, 6, 9.5, 6.5);    
+
     addSphere(kadinsky, 0, 0, 0);
-    //addCube(kadinsky)
 
     kadinskySec.position.set(0,0,2.5);
     kadinsky.add(kadinskySec);
@@ -175,35 +146,6 @@ function createCameras() {
     camera1 = createCamera(20, 20, 20);
     camera2 = createCamera(0, 0, 100)
     camera3 = createCamera(0, 100, 0)
-
-    // camera0 = new THREE.PerspectiveCamera(70,
-    //                                       window.innerWidth / window.innerHeight,
-    //                                           1,
-    //                                           1000);
-
-    //                                           camera0.position.x = 0;
-    //                                           camera0.position.y = 100;
-    //                                           camera0.position.z = 0;
-    //                                           camera0.lookAt(scene.position);
-    // camera1 = new THREE.OrthographicCamera(window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2 );
-    // camera2 =new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2 );
-    // camera3 = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2 );
-
-    // camera1.position.x = 50;
-    // camera1.position.y = 50;
-    // camera1.position.z = 50;
-    // camera1.lookAt(scene.position);
-
-  
-    // camera2.position.x = 0;
-    // camera2.position.y = 0;
-    // camera2.position.z = 100;
-    // camera2.lookAt(scene.position);
-
-    // camera3.position.x = 0;
-    // camera3.position.y = 100;
-    // camera3.position.z = 0;
-    // camera3.lookAt(scene.position);
     
     scene.add(camera1);
     scene.add(camera2);
@@ -212,20 +154,6 @@ function createCameras() {
 
     camera = camera1;
 }
-/*
-function createCamera_xz() {
-    'use strict';
-    camera = new THREE.OrthographicCamera( -10, 40, 20, -20, 1, 1000 );
-    // camera = new THREE.PerspectiveCamera(70,
-    //                                      window.innerWidth / window.innerHeight,
-    //                                      1,
-    //                                      1000);
-    camera.position.x = 0;
-    camera.position.y = 100;
-    camera.position.z = 0;
-    camera.lookAt(scene.position);
-}*/
-
 
 function checkRotate() {
     'use strict';
@@ -304,15 +232,9 @@ function onKeyDown(e) {
     case 65: //A
     case 97: //a
         rotateCubeLeft = true;
-        /*scene.traverse(function (node) {
-            if (node instanceof THREE.Mesh) {
-                node.material.wireframe = !node.material.wireframe;
-            }
-        });*/
         break;
     case 83:  //S
     case 115: //s
-        //ball.userData.jumping = !ball.userData.jumping;
         rotateCubeRight = true;
         break;
 
@@ -344,7 +266,7 @@ function onKeyDown(e) {
 
     
     
-        /*
+    
     case 69:  //E
     case 101: //e
         scene.traverse(function (node) {
@@ -353,7 +275,6 @@ function onKeyDown(e) {
             }
         });
         break;
-        */
     }
 
     
