@@ -18,7 +18,7 @@ var moveUpUp = false, moveDownDown = false;
 var kadinsky, kadinskySec, kadinskyTer, kadinskyNotMove;
 
 
-var clock, max=30;
+var clock, maxAngle=30;
 
 
 function addSphere(obj, x, y, z, dimx, dimy, dimz) {
@@ -60,17 +60,12 @@ function createKadinskyNotMove(x, y, z){
 
     kadinskyNotMove= new THREE.Object3D();
 
-    //sphere_material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-    //cube_material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
-    //rectangle_material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
-   
     addRectangle(kadinskyNotMove, 0, -10, -15, 1, 2, 1);
     addRectangle(kadinskyNotMove, -10, -10, 15, 3, 2, 1);
     addRectangle(kadinskyNotMove, 30, -30, 15, 1, 3, 3);
     addCube(kadinskyNotMove, 3.5, 3.5, -10, 3, 3, 3);
     addSphere(kadinskyNotMove, 15, 19.625, -2.5, 2, 5, 5);
     addCube(kadinskyNotMove, -20, 20, 20, 2, 2, 2);
-    //addPyramid(kadinskyNotMove, -10, -10, -10);
     addRectangle(kadinskyNotMove, 20, 20, 20, 2, 2, 1);    
     addSphere(kadinskyNotMove, -10, 0, -10, 1, 4, 4);
     addRectangle(kadinskyNotMove, -10, -10, 0, 3, 1, 2);
@@ -110,8 +105,6 @@ function createKadinsky(x, y, z){
 
     kadinsky = new THREE.Object3D();
     
-    //sphere_material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-
     addSphere(kadinsky, 0, 0, 0, 2.5, 10, 10);
 
     kadinskySec.position.set(0,0,2.5);
@@ -262,7 +255,6 @@ function onKeyDown(e) {
                     node.material.wireframe = !node.material.wireframe;
                 }
             });
-            render();
             break;
     
         //controlar  angulo θ1 que roda todo o objecto
@@ -369,9 +361,6 @@ function onKeyUp(e) {
             break;
 
     }
-
-
-
 }
 
 function render() {
