@@ -18,7 +18,7 @@ var moveUpUp = false, moveDownDown = false;
 var kadinsky, kadinskySec, kadinskyTer, kadinskyNotMove;
 
 
-var clock;
+var clock, max=30;
 
 
 function addSphere(obj, x, y, z, dimx, dimy, dimz) {
@@ -268,49 +268,36 @@ function onKeyDown(e) {
         //controlar  angulo θ1 que roda todo o objecto
         case 81: //Q
         case 113: //q
-            if (rotateBallRight)
-                rotateBallRight = false;
-            rotateBallLeft = !rotateBallLeft;
+            rotateBallLeft = true;
             break;
         
         case 87: //W
         case 119: //w
-            if (rotateBallLeft)
-                rotateBallLeft = false;
-            rotateBallRight = !rotateBallRight;
+            rotateBallRight = true;
             break;
 
         
         // controlar o angulo θ2 de um ramo secundario
         case 65: //A
         case 97: //a
-            if (rotateCubeRight)
-                rotateCubeRight = false;
-            rotateCubeLeft = !rotateCubeLeft;
+            rotateCubeLeft = true;
             break;
+
         case 83:  //S
         case 115: //s
-            if (rotateCubeLeft)
-                rotateCubeLeft = false;
-            rotateCubeRight = !rotateCubeRight;
+            rotateCubeRight = true;
             break;
 
         //controlar o ângulo θ3 de um ramo terciario.
         case 90: // Z
         case 122: //z
-            if(rotateRectangleRight)
-                rotateRectangleRight = false;
-            rotateRectangleLeft = !rotateRectangleLeft;
+            rotateRectangleLeft = true;
             break;
 
         case 88: //X
         case 120: //x
-            if (rotateRectangleLeft)
-                rotateRectangleLeft = false;
-            rotateRectangleRight = !rotateRectangleRight;
-            break;
-
-                
+            rotateRectangleRight = true;
+            break;         
         
         case 69:  //E
         case 101: //e
@@ -321,7 +308,6 @@ function onKeyDown(e) {
             });
             break;
     }
-
     
 }
 
@@ -350,37 +336,37 @@ function onKeyUp(e) {
         case 99: // c DownDown
             moveDownDown = false;
             break;
+
         // //parar a rotação do  angulo θ1 que roda todo o objecto
-        // case 81: //Q
-        // case 113: //q
-        //     rotateBallLeft=false;
-        //     break;
+        case 81: //Q
+        case 113: //q
+            rotateBallLeft=false;
+            break;
         
-        // case 87: //W
-        // case 119: //w
-        //     rotateBallRight=false;
-        //     break;
+        case 87: //W
+        case 119: //w
+            rotateBallRight=false;
+            break;
 
         // // parar a rotação do angulo θ2 de um ramo secundario
-        // case 65: //A
-        // case 97: //a
-        //     rotateCubeLeft = false;
-        //     break;
-        // case 83:  //S
-        // case 115: //s
-        //     rotateCubeRight = false;
-        //     break;
+        case 65: //A
+        case 97: //a
+            rotateCubeLeft = false;
+            break;
+        case 83:  //S
+        case 115: //s
+            rotateCubeRight = false;
+            break;
 
         // //controlar o ângulo θ3 de um ramo terciario.
-        // case 90: // Z
-        // case 122: //z
-        //     rotateRectangleLeft = false;
-        //     break;
-    
-        // case 88: //X
-        // case 120: //x
-        //     rotateRectangleRight = false;
-        //     break;
+        case 90: // Z
+        case 122: //z
+            rotateRectangleLeft = false;
+            break;
+        case 88: //X
+        case 120: //x
+            rotateRectangleRight = false;
+            break;
 
     }
 
