@@ -17,8 +17,8 @@ var moveUpUp = false, moveDownDown = false;
 
 var kadinsky, kadinskySec, kadinskyTer, kadinskyNotMove;
 
+var clock, speed;
 
-var clock, maxAngle=30;
 
 
 function addSphere(obj, x, y, z, dimx, dimy, dimz) {
@@ -95,18 +95,18 @@ function createKadinskySec(){
     'use strict';
 
     kadinskySec= new THREE.Object3D();
+    kadinskySec.userData={angle:0}; 
     addCube(kadinskySec, -2.5, -2.5, 2.5, 5, 5, 5);
     kadinskyTer.position.set(-5,-5,5);
-    kadinskySec.add(kadinskyTer); 
+    kadinskySec.add(kadinskyTer);
 }
 
 function createKadinsky(x, y, z){
     'use strict';
 
-    kadinsky = new THREE.Object3D();
+    kadinsky = new THREE.Group();
     
     addSphere(kadinsky, 0, 0, 0, 2.5, 10, 10);
-
     kadinskySec.position.set(0,0,2.5);
     kadinsky.add(kadinskySec);
 
@@ -164,41 +164,63 @@ function checkRotate() {
 
     if(rotateBallLeft)
         kadinsky.rotateY(-delta);
-
-    if(rotateBallRight)
-        kadinsky.rotateY(delta); 
     
-    if(rotateCubeLeft)
-        kadinskySec.rotateX(-delta);
+    if(rotateBallRight)
+        kadinsky.rotateY(delta);
+    
+    if(rotateCubeLeft){
+        if(kadinskySec.userData.angle > -1.5){
+            kadinskySec.rotateX(-delta);
+            kadinskySec.userData.angle -= delta;
+        }
+    }
 
-    if(rotateCubeRight)
-        kadinskySec.rotateX(delta);
+    if(rotateCubeRight){
+        if(kadinskySec.userData.angle < 0.21){
+            kadinskySec.rotateX(delta);
+            kadinskySec.userData.angle += delta;
+        }
+    }
 
     if(rotateRectangleLeft)
         kadinskyTer.rotateX(-delta);
+    
 
     if(rotateRectangleRight)
         kadinskyTer.rotateX(delta);
+    
     
 }
 
 function checkMovement() {
     'use strict';
-    // var delta = clock.getDelta();
+    var delta = clock.getDelta();
 
-    if (moveUp)
-        kadinsky.position.z += -0.5;
-    if (moveDown)
-        kadinsky.position.z += 0.5;
+    if (moveUp)  
+        kadinsky.position.z += delta*speed;
+    
+    if (moveDown)  
+        kadinsky.position.z -= delta*speed;
+    
+
     if (moveRight)
-        kadinsky.position.x += 0.5;
-    if (moveLeft)
-        kadinsky.position.x += -0.5;
-    if (moveUpUp)
-        kadinsky.position.y += 0.5;
-    if (moveDownDown)
-        kadinsky.position.y += -0.5;
+        kadinsky.position.x += delta*speed;
 
+        //kadinsky.position.x += 0.5;
+    if (moveLeft) 
+        kadinsky.position.x -= delta*speed;   
+    
+
+        //kadinsky.position.x += -0.5;
+    if (moveUpUp)
+        kadinsky.position.y += delta*speed;  
+       
+        //kadinsky.position.y += 0.5;
+    if (moveDownDown)  
+        kadinsky.position.y -= delta*speed;    
+    
+    console.log("delta", delta);
+        //kadinsky.position.y += -0.5;
 }
 
 function onResize() {
@@ -314,6 +336,7 @@ function onKeyUp(e) {
         case 40: // Arrow Down
             moveDown = false;
             break;
+
         case 39: // Arrow Right
             moveRight = false;
             break;
@@ -370,6 +393,7 @@ function render() {
 
 function init() {
     'use strict';
+    speed=1000;
     clock =  new THREE.Clock();
     renderer = new THREE.WebGLRenderer({
         antialias: true
