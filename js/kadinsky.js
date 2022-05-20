@@ -16,8 +16,7 @@ var moveUpUp = false, moveDownDown = false;
 
 var kadinsky, kadinskySec, kadinskyTer, kadinskyNotMove;
 
-var clock, speed, delta;
-
+var clock, speed;
 
 
 function addSphere(obj, x, y, z, dimx, dimy, dimz) {
@@ -34,6 +33,7 @@ function addSphere(obj, x, y, z, dimx, dimy, dimz) {
 
 function addCube(obj, x, y, z, dimx, dimy,dimz) {
     'use strict';
+
     cube_material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });    
     geometry = new THREE.CubeGeometry(dimx, dimy, dimz);
     mesh = new THREE.Mesh(geometry, cube_material);
@@ -43,6 +43,7 @@ function addCube(obj, x, y, z, dimx, dimy,dimz) {
 
 function addRectangle(obj, x, y, z, dimx, dimy, dimz) {
     'use strict';
+
     rectangle_material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true }); 
     geometry = new THREE.CubeGeometry(dimx, dimy, dimz);
     mesh = new THREE.Mesh(geometry, rectangle_material);
@@ -76,7 +77,6 @@ function createKadinskyNotMove(x, y, z){
     kadinskyNotMove.position.x = x;
     kadinskyNotMove.position.y = y;
     kadinskyNotMove.position.z = z;
-
 }
 
 
@@ -113,7 +113,6 @@ function createKadinsky(x, y, z){
     kadinsky.position.x = x;
     kadinsky.position.y = y;
     kadinsky.position.z = z;
-
 }
 
 function createScene() {
@@ -152,13 +151,11 @@ function createCameras() {
     scene.add(camera2);
     scene.add(camera3);
 
-
     camera = camera1;
 }
 
 function checkRotate(delta) {
     'use strict';
-    
 
     if(rotateBallLeft)
         kadinsky.rotateY(-delta);
@@ -182,12 +179,10 @@ function checkRotate(delta) {
 
     if(rotateRectangleLeft)
         kadinskyTer.rotateX(-delta);
-    
 
     if(rotateRectangleRight)
         kadinskyTer.rotateX(delta);
-    
-    
+     
 }
 
 function checkMovement(delta) {
@@ -212,8 +207,6 @@ function checkMovement(delta) {
        
     if (moveDownDown)  
         kadinsky.position.y -= delta*speed;    
-    
-    console.log("delta", delta);
 }
 
 function onResize() {
@@ -381,11 +374,13 @@ function onKeyUp(e) {
 
 function render() {
     'use strict';
+
     renderer.render(scene, camera);
 }
 
 function init() {
     'use strict';
+
     speed=10;
     clock =  new THREE.Clock();
     renderer = new THREE.WebGLRenderer({
@@ -396,8 +391,6 @@ function init() {
    
     createScene();
     createCameras();
-    
-    render();
     
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
