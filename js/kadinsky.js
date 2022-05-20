@@ -1,4 +1,3 @@
-/*global THREE, requestAnimationFrame, console*/
 
 const { OrthographicCamera } = require("./three");
 
@@ -35,8 +34,6 @@ function addSphere(obj, x, y, z, dimx, dimy, dimz) {
 
 function addCube(obj, x, y, z, dimx, dimy,dimz) {
     'use strict';
-    //material.color = 0x1100cc;
-                                    //x (vermelho) , z(verde), y(azul)
     cube_material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });    
     geometry = new THREE.CubeGeometry(dimx, dimy, dimz);
     mesh = new THREE.Mesh(geometry, cube_material);
@@ -46,8 +43,6 @@ function addCube(obj, x, y, z, dimx, dimy,dimz) {
 
 function addRectangle(obj, x, y, z, dimx, dimy, dimz) {
     'use strict';
-    //material.color = 0x1100cc;
-                                    //x (vermelho) , z(verde), y(azul)
     rectangle_material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true }); 
     geometry = new THREE.CubeGeometry(dimx, dimy, dimz);
     mesh = new THREE.Mesh(geometry, rectangle_material);
@@ -66,12 +61,15 @@ function createKadinskyNotMove(x, y, z){
     addCube(kadinskyNotMove, 3.5, 3.5, -10, 3, 3, 3);
     addSphere(kadinskyNotMove, 15, 19.625, -2.5, 2, 5, 5);
     addCube(kadinskyNotMove, -20, 20, 20, 2, 2, 2);
-    addRectangle(kadinskyNotMove, 20, 20, 20, 2, 2, 1);    
+    addRectangle(kadinskyNotMove, 20, 20, -5, 2, 2, 1);    
     addSphere(kadinskyNotMove, -10, 0, -10, 1, 4, 4);
-    addRectangle(kadinskyNotMove, -10, -10, 0, 3, 1, 2);
-    addRectangle(kadinskyNotMove, -10, -10, -10, 1, 2, 2); 
-    addSphere(kadinskyNotMove, 0, 0, -10, 2, 6, 6);  
+    addRectangle(kadinskyNotMove, -10, -20, 0, 3, 1, 2);
+    addRectangle(kadinskyNotMove, -10, -25, -10, 1, 2, 2); 
+    addSphere(kadinskyNotMove, 25, 15, -10, 2, 6, 6);  
     addRectangle(kadinskyNotMove, -20, 0, 20, 3, 1, 1); 
+    addRectangle(kadinskyNotMove, -30, -15, -15, 2, 4, 4); 
+    addSphere(kadinskyNotMove, 20, 5, -8, 2, 6, 6);  
+    addRectangle(kadinskyNotMove, -14, 6.7, 16, 3, 1, 1);
 
     scene.add(kadinskyNotMove);
     
@@ -86,7 +84,7 @@ function createKadinskyNotMove(x, y, z){
 function createKadinskyTer(){
     'use strict';
 
-    kadinskyTer= new THREE.Object3D();
+    kadinskyTer= new THREE.Group();
     addRectangle(kadinskyTer, -1.5, -3, 1.5, 3, 6, 3);
 }
 
@@ -94,7 +92,7 @@ function createKadinskyTer(){
 function createKadinskySec(){
     'use strict';
 
-    kadinskySec= new THREE.Object3D();
+    kadinskySec= new THREE.Group();
     kadinskySec.userData={angle:0}; 
     addCube(kadinskySec, -2.5, -2.5, 2.5, 5, 5, 5);
     kadinskyTer.position.set(-5,-5,5);
@@ -205,21 +203,17 @@ function checkMovement(delta) {
     if (moveRight)
         kadinsky.position.x += delta*speed;
 
-        //kadinsky.position.x += 0.5;
     if (moveLeft) 
         kadinsky.position.x -= delta*speed;   
     
 
-        //kadinsky.position.x += -0.5;
     if (moveUpUp)
         kadinsky.position.y += delta*speed;  
        
-        //kadinsky.position.y += 0.5;
     if (moveDownDown)  
         kadinsky.position.y -= delta*speed;    
     
     console.log("delta", delta);
-        //kadinsky.position.y += -0.5;
 }
 
 function onResize() {
