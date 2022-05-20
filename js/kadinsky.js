@@ -15,6 +15,7 @@ var moveUpUp = false, moveDownDown = false;
 var kadinsky, kadinskySec, kadinskyTer, kadinskyNotMove;
 
 var clock, speed;
+var cubeMaxAngleLeft, cubeMaxAngleRight;
 
 function addCylinder(obj, x, y, z, radiusTop, radiusBot, height) {
     'use strict';
@@ -191,14 +192,14 @@ function checkRotate(delta) {
         kadinsky.rotateY(delta);
     
     if(rotateCubeLeft){
-        if(kadinskySec.userData.angle > -1.5){
+        if(kadinskySec.userData.angle > cubeMaxAngleLeft){
             kadinskySec.rotateX(-delta);
             kadinskySec.userData.angle -= delta;
         }
     }
 
     if(rotateCubeRight){
-        if(kadinskySec.userData.angle < 0.21){
+        if(kadinskySec.userData.angle < cubeMaxAngleRight){
             kadinskySec.rotateX(delta);
             kadinskySec.userData.angle += delta;
         }
@@ -408,7 +409,9 @@ function render() {
 function init() {
     'use strict';
 
-    speed=10;
+    speed = 10;
+    cubeMaxAngleLeft = -1.5;
+    cubeMaxAngleRight = 0.21;
     clock =  new THREE.Clock();
     renderer = new THREE.WebGLRenderer({
         antialias: true
@@ -426,7 +429,7 @@ function init() {
 
 function animate() {
     'use strict';
-
+    
     var delta = clock.getDelta();
     // Update
     checkRotate(delta);
