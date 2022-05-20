@@ -17,7 +17,7 @@ var moveUpUp = false, moveDownDown = false;
 
 var kadinsky, kadinskySec, kadinskyTer, kadinskyNotMove;
 
-var clock, speed;
+var clock, speed, delta;
 
 
 
@@ -158,9 +158,9 @@ function createCameras() {
     camera = camera1;
 }
 
-function checkRotate() {
+function checkRotate(delta) {
     'use strict';
-    var delta = clock.getDelta();
+    
 
     if(rotateBallLeft)
         kadinsky.rotateY(-delta);
@@ -192,9 +192,8 @@ function checkRotate() {
     
 }
 
-function checkMovement() {
+function checkMovement(delta) {
     'use strict';
-    var delta = clock.getDelta();
 
     if (moveUp)  
         kadinsky.position.z += delta*speed;
@@ -393,7 +392,7 @@ function render() {
 
 function init() {
     'use strict';
-    speed=1000;
+    speed=10;
     clock =  new THREE.Clock();
     renderer = new THREE.WebGLRenderer({
         antialias: true
@@ -414,9 +413,10 @@ function init() {
 function animate() {
     'use strict';
 
+    var delta = clock.getDelta();
     // Update
-    checkRotate();
-    checkMovement();
+    checkRotate(delta);
+    checkMovement(delta);
 
     // Display
     render();
