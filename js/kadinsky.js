@@ -4,8 +4,6 @@ const { OrthographicCamera } = require("./three");
 var camera, camera1, camera2, camera3, scene, renderer;
 var geometry, mesh;
 
-var sphere_material, cube_material, rectangle_material;
-
 var rotateBallLeft = false, rotateBallRight = false;
 var rotateCubeLeft = false, rotateCubeRight = false;
 var rotateRectangleLeft = false, rotateRectangleRight = false;
@@ -18,11 +16,36 @@ var kadinsky, kadinskySec, kadinskyTer, kadinskyNotMove;
 
 var clock, speed;
 
+function addCylinder(obj, x, y, z, radiusTop, radiusBot, height) {
+    'use strict';
+    
+    var cylinder_material = new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true });
+    geometry = new THREE.CylinderGeometry(radiusTop, radiusBot, height,10);
+    mesh = new THREE.Mesh(geometry, cylinder_material);
+    
+    mesh.position.set(x, y, z);
+    
+    obj.add(mesh)
+}
+
+function addTetrahedron(obj, x, y, z, radius, detail) {
+    'use strict';
+    
+    var tetrahedron_material = new THREE.MeshBasicMaterial({ color: 0x0044ff, wireframe: true });
+    geometry = new THREE.TetrahedronGeometry(radius, detail);
+    mesh = new THREE.Mesh(geometry, tetrahedron_material);
+    
+    mesh.position.set(x, y, z);
+    
+    obj.add(mesh)
+}
+
+
 
 function addSphere(obj, x, y, z, dimx, dimy, dimz) {
     'use strict';
     
-    sphere_material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    var sphere_material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
     geometry = new THREE.SphereGeometry(dimx, dimy, dimz);
     mesh = new THREE.Mesh(geometry, sphere_material);
     
@@ -34,7 +57,7 @@ function addSphere(obj, x, y, z, dimx, dimy, dimz) {
 function addCube(obj, x, y, z, dimx, dimy,dimz) {
     'use strict';
 
-    cube_material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });    
+    var cube_material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });    
     geometry = new THREE.CubeGeometry(dimx, dimy, dimz);
     mesh = new THREE.Mesh(geometry, cube_material);
     mesh.position.set(x, y, z);
@@ -44,7 +67,7 @@ function addCube(obj, x, y, z, dimx, dimy,dimz) {
 function addRectangle(obj, x, y, z, dimx, dimy, dimz) {
     'use strict';
 
-    rectangle_material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true }); 
+    var rectangle_material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true }); 
     geometry = new THREE.CubeGeometry(dimx, dimy, dimz);
     mesh = new THREE.Mesh(geometry, rectangle_material);
     mesh.position.set(x, y, z);
@@ -65,12 +88,12 @@ function createKadinskyNotMove(x, y, z){
     addRectangle(kadinskyNotMove, 20, 20, -5, 2, 2, 1);    
     addSphere(kadinskyNotMove, -10, 0, -10, 1, 4, 4);
     addRectangle(kadinskyNotMove, -10, -20, 0, 3, 1, 2);
-    addRectangle(kadinskyNotMove, -10, -25, -10, 1, 2, 2); 
+    addTetrahedron(kadinskyNotMove, -10, -25, -10, 1, 1); 
     addSphere(kadinskyNotMove, 25, 15, -10, 2, 6, 6);  
     addRectangle(kadinskyNotMove, -20, 0, 20, 3, 1, 1); 
     addRectangle(kadinskyNotMove, -30, -15, -15, 2, 4, 4); 
     addSphere(kadinskyNotMove, 20, 5, -8, 2, 6, 6);  
-    addRectangle(kadinskyNotMove, -14, 6.7, 16, 3, 1, 1);
+    addCylinder(kadinskyNotMove, -14, 6.7, 16, 3, 3, 1);
 
     scene.add(kadinskyNotMove);
     
