@@ -76,23 +76,27 @@ function addRectangle(obj, x, y, z, dimx, dimy, dimz) {
 
 function createKadinskyNotMove(x, y, z){
     'use strict';
-
+    
     kadinskyNotMove= new THREE.Object3D();
 
     addRectangle(kadinskyNotMove, 0, -10, -15, 1, 2, 1);
     addRectangle(kadinskyNotMove, -10, -10, 15, 3, 2, 1);
-    addRectangle(kadinskyNotMove, 30, -30, 15, 1, 3, 3);
-    addCube(kadinskyNotMove, 3.5, 3.5, -10, 3, 3, 3);
-    addSphere(kadinskyNotMove, 15, 19.625, -2.5, 2, 5, 5);
-    addCube(kadinskyNotMove, -20, 20, 20, 2, 2, 2);
+    addRectangle(kadinskyNotMove, 15, -15, 15, 1, 3, 3);
     addRectangle(kadinskyNotMove, 20, 20, -5, 2, 2, 1);    
-    addSphere(kadinskyNotMove, -10, 0, -10, 1, 4, 4);
-    addRectangle(kadinskyNotMove, -10, -20, 0, 3, 1, 2);
-    addTetrahedron(kadinskyNotMove, -10, -25, -10, 1, 1); 
-    addSphere(kadinskyNotMove, 25, 15, -10, 2, 6, 6);  
     addRectangle(kadinskyNotMove, -20, 0, 20, 3, 1, 1); 
     addRectangle(kadinskyNotMove, -30, -15, -15, 2, 4, 4); 
+    addRectangle(kadinskyNotMove, -10, -20, 0, 3, 1, 2);
+
+    addCube(kadinskyNotMove, 3.5, 3.5, -10, 3, 3, 3);
+    addCube(kadinskyNotMove, -20, 20, 20, 2, 2, 2);
+
+    addSphere(kadinskyNotMove, 15, 19.625, -2.5, 2, 5, 5);
+    addSphere(kadinskyNotMove, -10, 0, -10, 1, 4, 4);
+    addSphere(kadinskyNotMove, 25, 15, -10, 2, 6, 6);  
     addSphere(kadinskyNotMove, 20, 5, -8, 2, 6, 6);  
+
+    addTetrahedron(kadinskyNotMove, -10, -25, -10, 1, 1); 
+
     addCylinder(kadinskyNotMove, -14, 6.7, 16, 3, 3, 1);
 
     scene.add(kadinskyNotMove);
