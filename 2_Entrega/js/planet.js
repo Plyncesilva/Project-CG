@@ -1,5 +1,5 @@
 
-const { OrthographicCamera } = require("./three");
+const { OrthographicCamera, Spherical } = require("./three");
 
 var camera, camera1, camera2, camera3, scene, renderer;
 var geometry, mesh;
@@ -12,7 +12,7 @@ var moveUp = false, moveDown = false;
 var moveRight = false, moveLeft = false;
 var moveUpUp = false, moveDownDown = false;
 
-var kadinsky, kadinskySec, kadinskyTer, kadinskyNotMove;
+var planet, rocket, R, garbage;
 
 var clock, speed;
 var cubeMaxAngleLeft, cubeMaxAngleRight;
@@ -42,11 +42,10 @@ function addTetrahedron(obj, x, y, z, radius, detail) {
 }
 
 
-
 function addSphere(obj, x, y, z, dimx, dimy, dimz) {
     'use strict';
     
-    var sphere_material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    var sphere_material = new THREE.MeshBasicMaterial({ color: 0x0000aa, wireframe: true });
     geometry = new THREE.SphereGeometry(dimx, dimy, dimz);
     mesh = new THREE.Mesh(geometry, sphere_material);
     
@@ -59,8 +58,18 @@ function addCube(obj, x, y, z, dimx, dimy,dimz) {
     'use strict';
 
     var cube_material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });    
-    geometry = new THREE.CubeGeometry(dimx, dimy, dimz);
+    geometry = new THREE.BoxGeometry(dimx, dimy, dimz);
     mesh = new THREE.Mesh(geometry, cube_material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addDodecahedron(obj, x, y, z, radius) {
+    'use strict';
+
+    var dod_material = new THREE.MeshBasicMaterial({ color: 0x44cc88, wireframe: true });    
+    geometry = new THREE.DodecahedronGeometry(radius);
+    mesh = new THREE.Mesh(geometry, dod_material);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
@@ -69,78 +78,109 @@ function addRectangle(obj, x, y, z, dimx, dimy, dimz) {
     'use strict';
 
     var rectangle_material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true }); 
-    geometry = new THREE.CubeGeometry(dimx, dimy, dimz);
+    geometry = new THREE.BoxGeometry(dimx, dimy, dimz);
     mesh = new THREE.Mesh(geometry, rectangle_material);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
 
-function createKadinskyNotMove(x, y, z){
+function addTorus(obj, x, y, z, radius, tubeRadius) {
     'use strict';
-    
-    kadinskyNotMove= new THREE.Object3D();
 
-    addRectangle(kadinskyNotMove, 0, -10, -15, 1, 2, 1);
-    addRectangle(kadinskyNotMove, -10, -10, 15, 3, 2, 1);
-    addRectangle(kadinskyNotMove, 15, -15, 15, 1, 3, 3);
-    addRectangle(kadinskyNotMove, 20, 20, -5, 2, 2, 1);    
-    addRectangle(kadinskyNotMove, -20, 0, 20, 3, 1, 1); 
-    addRectangle(kadinskyNotMove, -30, -15, -15, 2, 4, 4); 
-    addRectangle(kadinskyNotMove, -10, -20, 0, 3, 1, 2);
-
-    addCube(kadinskyNotMove, 3.5, 3.5, -10, 3, 3, 3);
-    addCube(kadinskyNotMove, -20, 20, 20, 2, 2, 2);
-
-    addSphere(kadinskyNotMove, 15, 19.625, -2.5, 2, 5, 5);
-    addSphere(kadinskyNotMove, -10, 0, -10, 1, 4, 4);
-    addSphere(kadinskyNotMove, 25, 15, -10, 2, 6, 6);  
-    addSphere(kadinskyNotMove, 20, 5, -8, 2, 6, 6);  
-
-    addTetrahedron(kadinskyNotMove, -10, -25, -10, 1, 1); 
-
-    addCylinder(kadinskyNotMove, -14, 6.7, 16, 3, 3, 1);
-
-    scene.add(kadinskyNotMove);
-    
-    kadinskyNotMove.position.x = x;
-    kadinskyNotMove.position.y = y;
-    kadinskyNotMove.position.z = z;
+    var torus_material = new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true }); 
+    geometry = new THREE.TorusGeometry(radius, tubeRadius);
+    mesh = new THREE.Mesh(geometry, torus_material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
 }
 
-
-
-function createKadinskyTer(){
+function addCylinder(obj, x, y, z, dim_bot, dim_top, dim_height) {
     'use strict';
 
-    kadinskyTer= new THREE.Group();
-    addRectangle(kadinskyTer, -1.5, -3, 1.5, 3, 6, 3);
+    var cylinder_material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true }); 
+    geometry = new THREE.CylinderGeometry(dim_bot, dim_top, dim_height);
+    mesh = new THREE.Mesh(geometry, cylinder_material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
 }
 
-
-function createKadinskySec(){
+function addCapsule(obj, x, y, z, radius, lenght){
     'use strict';
 
-    kadinskySec= new THREE.Group();
-    kadinskySec.userData={angle:0}; 
-    addCube(kadinskySec, -2.5, -2.5, 2.5, 5, 5, 5);
-    kadinskyTer.position.set(-5,-5,5);
-    kadinskySec.add(kadinskyTer);
+    var capsule_material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true }); 
+    geometry = new THREE.CapsuleGeometry(radius, lenght);
+    mesh = new THREE.Mesh(geometry, capsule_material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
 }
 
-function createKadinsky(x, y, z){
+function createRocket(obj, x, y, z){
     'use strict';
 
-    kadinsky = new THREE.Group();
-    
-    addSphere(kadinsky, 0, 0, 0, 2.5, 10, 10);
-    kadinskySec.position.set(0,0,2.5);
-    kadinsky.add(kadinskySec);
+    rocket = new THREE.Group();
 
-    scene.add(kadinsky);
+    addCylinder(rocket, x, y, z, 1, 1, R/20);
+    addCylinder(rocket, x, y + R/20, z, 0, 1, R/20);
+
+    addCapsule(rocket, x + 1, y - R/40, x + 1, 0.2, 1.2);
+    addCapsule(rocket, x - 1, y - R/40, x + 1, 0.2, 1.2);
+    addCapsule(rocket, x + 1, y - R/40, x - 1, 0.2, 1.2);
+    addCapsule(rocket, x - 1, y - R/40, x - 1, 0.2, 1.2);
+
+}
+
+function randomBetween(min, max){
+    return Math.floor(Math.random() * (max - min) + min);
+}
+
+function createGarbage(obj, n) {
+    'use strict';
+
+    garbage = new THREE.Group();
+
+    for (let i = 0; i < n; i++) {
+        let random_x = randomBetween(-1.2*R, 1.2*R);
+        let random_y = randomBetween(- Math.sqrt(Math.pow(1.2*R, 2) - Math.pow(random_x, 2)) , 
+                                        Math.sqrt(Math.pow(1.2*R, 2) - Math.pow(random_x, 2)));
+        let z = Math.pow(-1, i) * Math.sqrt(Math.pow(1.2*R, 2) - Math.pow(random_x, 2) - Math.pow(random_y, 2));
+
+        if (Math.floor(i/5) == 0)
+            addDodecahedron(garbage, random_x, random_y, z, R/20);
+        else if (Math.floor(i/5) == 1)
+            addTetrahedron(garbage, random_x, random_y, z, R/20, 10);
+        else if (Math.floor(i/5) == 2)
+            addSphere(garbage, random_x, random_y, z, R/24, 5, 5);
+        else if (Math.floor(i/5) == 3)
+            addTorus(garbage, random_x, random_y, z, R/24, R/24);
+        else
+            addCube(garbage, random_x, random_y, z, R/24, R/24, R/24);
+    }
+
+}
+
+function createPlanet(x, y, z){
+    'use strict';
+
+    planet = new THREE.Group();
+    R = 40;
+
+    addSphere(planet, 0, 0, 0, R, 20, 20);
     
-    kadinsky.position.x = x;
-    kadinsky.position.y = y;
-    kadinsky.position.z = z;
+    createRocket(planet, 0, 0, 0);
+    planet.add(rocket);
+
+    rocket.position.set(0, 1.2*R, 0);
+    // var test = new THREE.Spherical();
+    // rocket.position.set(test);
+
+    createGarbage(planet, 25);
+    planet.add(garbage);
+
+    scene.add(planet);
+    
+    planet.position.x = x;
+    planet.position.y = y;
+    planet.position.z = z;
 }
 
 function createScene() {
@@ -150,15 +190,12 @@ function createScene() {
     
     scene.add(new THREE.AxisHelper(10));
     
-    createKadinskyTer();
-    createKadinskySec();
-    createKadinsky(0, 0, 0);
-    createKadinskyNotMove(0,0,0);
+    createPlanet(0, 0, 0);
 }
 
 
 function createCamera(x, y, z){
-    camera = new THREE.OrthographicCamera(window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / - 20 );
+    camera = new THREE.OrthographicCamera(window.innerWidth / - 15, window.innerWidth / 15, window.innerHeight / 15, window.innerHeight / - 15 );
     
     camera.position.x = x;
     camera.position.y = y;
@@ -339,7 +376,6 @@ function onKeyDown(e) {
     
 }
 
-
 function onKeyUp(e) {
     'use strict';
         
@@ -409,9 +445,9 @@ function render() {
 function init() {
     'use strict';
 
-    speed = 10;
-    cubeMaxAngleLeft = -1.5;
-    cubeMaxAngleRight = 0.21;
+    // speed = 10;
+    // cubeMaxAngleLeft = -1.5;
+    // cubeMaxAngleRight = 0.21;
     clock =  new THREE.Clock();
     renderer = new THREE.WebGLRenderer({
         antialias: true
@@ -432,8 +468,8 @@ function animate() {
     
     var delta = clock.getDelta();
     // Update
-    checkRotate(delta);
-    checkMovement(delta);
+    // checkRotate(delta);
+    // checkMovement(delta);
 
     // Display
     render();
