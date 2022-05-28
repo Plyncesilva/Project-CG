@@ -4,18 +4,19 @@ const { OrthographicCamera, Spherical } = require("./three");
 var camera, camera1, camera2, camera3, scene, renderer;
 var geometry, mesh;
 
-var rotateBallLeft = false, rotateBallRight = false;
-var rotateCubeLeft = false, rotateCubeRight = false;
-var rotateRectangleLeft = false, rotateRectangleRight = false;
 
-var moveUp = false, moveDown = false;
-var moveRight = false, moveLeft = false;
-var moveUpUp = false, moveDownDown = false;
+var moveUp = false, moveDown = false; //Longitude
+var moveRight = false, moveLeft = false; //Latitude
+
 
 var planet, rocket, R, garbage;
 
-var clock, speed;
-var cubeMaxAngleLeft, cubeMaxAngleRight;
+var clock, camaraNumber;
+
+
+//coordenadas esfericas
+var R, alpha, epsilon;
+
 
 function addCylinder(obj, x, y, z, radiusTop, radiusBot, height) {
     'use strict';
@@ -175,6 +176,7 @@ function createPlanet(x, y, z){
 
     createGarbage(planet, 25);
     planet.add(garbage);
+    scene.add(rocket);
 
     scene.add(planet);
     
@@ -193,6 +195,46 @@ function createScene() {
     createPlanet(0, 0, 0);
 }
 
+function prepareCoordinatesSpheric(){
+    alpha = 0;
+    epsilon = 0;
+
+    //var alpha = Math.atan(rocket.position.z/rocket.position.x);
+    //var thelta = Math.acos(rocket.position.y/R);
+    //var radiusSpheric = Math.sqrt(Math.pow(rocket.position.x, 2) +  Math.pow(rocket.position.y, 2)+ Math.pow(rocket.position.z, 2));
+}
+
+function movimentLatRightRocket(delta){
+    alpha = alpha < 2*Math.PI ? alpha+delta : 2*Math.PI;
+  
+    rocket.position.x = 1.2 * R * Math.cos(alpha) * Math.sin(epsilon);
+    rocket.position.z = 1.2 * R * Math.sin(alpha) * Math.sin(epsilon);
+    rocket.position.y = 1.2 * R * Math.cos(epsilon);
+}   
+
+function movimentLatLeftRocket(delta){
+    alpha = alpha > 0 ? alpha-delta : 0;
+  
+    rocket.position.x = 1.2 * R * Math.cos(alpha) * Math.sin(epsilon);
+    rocket.position.z = 1.2 * R * Math.sin(alpha) * Math.sin(epsilon);
+    rocket.position.y = 1.2 * R * Math.cos(epsilon);
+} 
+
+function movimentLonDownRocket(delta){
+    epsilon = epsilon < Math.PI ? epsilon+delta : Math.PI;
+    
+    rocket.position.x = 1.2* R * Math.cos(alpha) * Math.sin(epsilon);
+    rocket.position.z = 1.2* R * Math.sin(alpha) * Math.sin(epsilon);
+    rocket.position.y = 1.2 *R * Math.cos(epsilon);
+}   
+
+function movimentLonUpRocket(delta){
+    epsilon = epsilon > 0 ? epsilon-delta : 0;
+    
+    rocket.position.x = 1.2 * R * Math.cos(alpha) * Math.sin(epsilon);
+    rocket.position.z = 1.2 *R * Math.sin(alpha) * Math.sin(epsilon);
+    rocket.position.y = 1.2 *R * Math.cos(epsilon);
+} 
 
 function createCamera(x, y, z){
     camera = new THREE.OrthographicCamera(window.innerWidth / - 15, window.innerWidth / 15, window.innerHeight / 15, window.innerHeight / - 15 );
@@ -208,10 +250,30 @@ function createCamera(x, y, z){
 function createCameras() {
     'use strict';
 
-    camera1 = createCamera(20, 20, 20);
-    camera2 = createCamera(0, 0, 100)
-    camera3 = createCamera(0, 100, 0)
+    camera1 =  new THREE.OrthographicCamera(window.innerWidth / - 15, window.innerWidth / 15, window.innerHeight / 15, window.innerHeight / - 15 );    
+    camera1.position.set(20,20,20);
+    camera1.lookAt(scene.position);
     
+    camera2 =  new THREE.PerspectiveCamera(70,
+        window.innerWidth / window.innerHeight,
+        1,
+        1000);
+    camera2.position.set(0,0,199);
+    camera2.lookAt(scene.position);
+  
+    
+    camera3 =  new THREE.PerspectiveCamera(70,
+        window.innerWidth / window.innerHeight,
+        1,
+        1000);
+
+    rocket.add(camera3);
+    
+    camera3.position.set(rocket.position.x + R/15, rocket.position.y + R/15, rocket.position.z +R/15);
+
+    camera3.lookAt(rocket.position);
+    
+        
     scene.add(camera1);
     scene.add(camera2);
     scene.add(camera3);
@@ -219,59 +281,29 @@ function createCameras() {
     camera = camera1;
 }
 
-function checkRotate(delta) {
-    'use strict';
-
-    if(rotateBallLeft)
-        kadinsky.rotateY(-delta);
-    
-    if(rotateBallRight)
-        kadinsky.rotateY(delta);
-    
-    if(rotateCubeLeft){
-        if(kadinskySec.userData.angle > cubeMaxAngleLeft){
-            kadinskySec.rotateX(-delta);
-            kadinskySec.userData.angle -= delta;
-        }
-    }
-
-    if(rotateCubeRight){
-        if(kadinskySec.userData.angle < cubeMaxAngleRight){
-            kadinskySec.rotateX(delta);
-            kadinskySec.userData.angle += delta;
-        }
-    }
-
-    if(rotateRectangleLeft)
-        kadinskyTer.rotateX(-delta);
-
-    if(rotateRectangleRight)
-        kadinskyTer.rotateX(delta);
-     
-}
-
 function checkMovement(delta) {
     'use strict';
 
-    if (moveUp)  
-        kadinsky.position.z += delta*speed;
-    
-    if (moveDown)  
-        kadinsky.position.z -= delta*speed;
-    
+    //latitude
+    if(moveLeft){
+        movimentLatLeftRocket(delta);
+    }
 
-    if (moveRight)
-        kadinsky.position.x += delta*speed;
+    if(moveRight)
+        movimentLatRightRocket(delta);  
 
-    if (moveLeft) 
-        kadinsky.position.x -= delta*speed;   
     
+    //longitude
+   
+    if(moveDown)
+        movimentLonDownRocket(delta);
 
-    if (moveUpUp)
-        kadinsky.position.y += delta*speed;  
-       
-    if (moveDownDown)  
-        kadinsky.position.y -= delta*speed;    
+    if(moveUp)
+        movimentLonUpRocket(delta);
+
+    camera3.position.set(rocket.position.x + R/15, rocket.position.y + R/15, rocket.position.z +R/15);
+
+    camera3.lookAt(rocket.position);
 }
 
 function onResize() {
@@ -305,14 +337,6 @@ function onKeyDown(e) {
         case 37: // Arrow Left
             moveLeft = true;
             break;
-        case 68: // D UpUp
-        case 100: // d UpUp   
-            moveUpUp = true;
-            break;
-        case 67: // C DownDown
-        case 99: // c DownDown
-            moveDownDown = true;
-            break;
         case 49: //1
             camera=camera1;
             break;
@@ -322,56 +346,7 @@ function onKeyDown(e) {
         case 51: //3
             camera=camera3;
             break;
-        case 52: //4
-            scene.traverse(function (node) {
-                if (node instanceof THREE.Mesh) {
-                    node.material.wireframe = !node.material.wireframe;
-                }
-            });
-            break;
-    
-        //controlar  angulo θ1 que roda todo o objecto
-        case 81: //Q
-        case 113: //q
-            rotateBallLeft = true;
-            break;
-        
-        case 87: //W
-        case 119: //w
-            rotateBallRight = true;
-            break;
 
-        
-        // controlar o angulo θ2 de um ramo secundario
-        case 65: //A
-        case 97: //a
-            rotateCubeLeft = true;
-            break;
-
-        case 83:  //S
-        case 115: //s
-            rotateCubeRight = true;
-            break;
-
-        //controlar o ângulo θ3 de um ramo terciario.
-        case 90: // Z
-        case 122: //z
-            rotateRectangleLeft = true;
-            break;
-
-        case 88: //X
-        case 120: //x
-            rotateRectangleRight = true;
-            break;         
-        
-        case 69:  //E
-        case 101: //e
-            scene.traverse(function (node) {
-                if (node instanceof THREE.AxisHelper) {
-                    node.visible = !node.visible;
-                }
-            });
-            break;
     }
     
 }
@@ -393,46 +368,6 @@ function onKeyUp(e) {
         case 37: // Arrow Left
             moveLeft = false;
             break;
-        case 68: // d UpUp
-        case 100: // D UpUp   
-            moveUpUp = false;
-            break;
-        case 67: // C DownDown
-        case 99: // c DownDown
-            moveDownDown = false;
-            break;
-
-        // //parar a rotação do  angulo θ1 que roda todo o objecto
-        case 81: //Q
-        case 113: //q
-            rotateBallLeft=false;
-            break;
-        
-        case 87: //W
-        case 119: //w
-            rotateBallRight=false;
-            break;
-
-        // // parar a rotação do angulo θ2 de um ramo secundario
-        case 65: //A
-        case 97: //a
-            rotateCubeLeft = false;
-            break;
-        case 83:  //S
-        case 115: //s
-            rotateCubeRight = false;
-            break;
-
-        // //controlar o ângulo θ3 de um ramo terciario.
-        case 90: // Z
-        case 122: //z
-            rotateRectangleLeft = false;
-            break;
-        case 88: //X
-        case 120: //x
-            rotateRectangleRight = false;
-            break;
-
     }
 }
 
@@ -445,9 +380,6 @@ function render() {
 function init() {
     'use strict';
 
-    // speed = 10;
-    // cubeMaxAngleLeft = -1.5;
-    // cubeMaxAngleRight = 0.21;
     clock =  new THREE.Clock();
     renderer = new THREE.WebGLRenderer({
         antialias: true
@@ -455,8 +387,10 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
    
+    prepareCoordinatesSpheric();
     createScene();
     createCameras();
+    
     
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
@@ -467,9 +401,9 @@ function animate() {
     'use strict';
     
     var delta = clock.getDelta();
+
     // Update
-    // checkRotate(delta);
-    // checkMovement(delta);
+    checkMovement(delta);
 
     // Display
     render();
