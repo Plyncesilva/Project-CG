@@ -11,7 +11,7 @@ var moveRight = false, moveLeft = false; //Latitude
 
 var planet, rocket, R, garbage;
 
-var clock, camaraNumber;
+var clock, currentCameraNumber;
 
 
 //coordenadas esfericas
@@ -210,6 +210,8 @@ function movimentLatRightRocket(delta){
     rocket.position.x = 1.2 * R * Math.cos(alpha) * Math.sin(epsilon);
     rocket.position.z = 1.2 * R * Math.sin(alpha) * Math.sin(epsilon);
     rocket.position.y = 1.2 * R * Math.cos(epsilon);
+  
+    detectColision();
 }   
 
 function movimentLatLeftRocket(delta){
@@ -218,6 +220,7 @@ function movimentLatLeftRocket(delta){
     rocket.position.x = 1.2 * R * Math.cos(alpha) * Math.sin(epsilon);
     rocket.position.z = 1.2 * R * Math.sin(alpha) * Math.sin(epsilon);
     rocket.position.y = 1.2 * R * Math.cos(epsilon);
+    detectColision();
 } 
 
 function movimentLonDownRocket(delta){
@@ -226,6 +229,7 @@ function movimentLonDownRocket(delta){
     rocket.position.x = 1.2* R * Math.cos(alpha) * Math.sin(epsilon);
     rocket.position.z = 1.2* R * Math.sin(alpha) * Math.sin(epsilon);
     rocket.position.y = 1.2 *R * Math.cos(epsilon);
+    detectColision();
 }   
 
 function movimentLonUpRocket(delta){
@@ -234,18 +238,30 @@ function movimentLonUpRocket(delta){
     rocket.position.x = 1.2 * R * Math.cos(alpha) * Math.sin(epsilon);
     rocket.position.z = 1.2 *R * Math.sin(alpha) * Math.sin(epsilon);
     rocket.position.y = 1.2 *R * Math.cos(epsilon);
+
+    detectColision();
 } 
 
-function createCamera(x, y, z){
-    camera = new THREE.OrthographicCamera(window.innerWidth / - 15, window.innerWidth / 15, window.innerHeight / 15, window.innerHeight / - 15 );
-    
-    camera.position.x = x;
-    camera.position.y = y;
-    camera.position.z = z;
-    camera.lookAt(scene.position);
-
-    return camera
+function detectColision(){
+    console.log("count garbage", garbage.children.length);
+    for(var i = 0; i < garbage.children.length; i++){
+        if(checkColision(garbage.children[i])){
+            garbage.remove(garbage.children[i]);
+        }
+    }
 }
+
+
+function checkColision(obj){
+    var distance = Math.pow( R/10,2);
+
+    var distance_coord = Math.pow((rocket.position.x - obj.position.x),2) + Math.pow((rocket.position.y - obj.position.y),2) + Math.pow((rocket.position.z - obj.position.z),2);
+    //console.log("Distancia" , distance);
+    //console.log("Distancia_coord" , distance_coord);
+    return distance_coord < distance;
+
+}
+
 
 function createCameras() {
     'use strict';
@@ -279,6 +295,7 @@ function createCameras() {
     scene.add(camera3);
 
     camera = camera1;
+    currentCameraNumber=1;
 }
 
 function checkMovement(delta) {
@@ -308,17 +325,21 @@ function checkMovement(delta) {
 
 function onResize() {
     'use strict';
-
     renderer.setSize(window.innerWidth, window.innerHeight);
-
-    if (window.innerHeight > 0 && window.innerWidth > 0) {
-        camera.left = window.innerWidth / - 20;
-        camera.right = window.innerWidth / 20;
-        camera.top = window.innerHeight / 20;
-        camera.bottom = window.innerHeight / - 20;
-        camera.updateProjectionMatrix();
+    
+    if(currentCameraNumber==1){
+        if (window.innerHeight > 0 && window.innerWidth > 0) {
+            camera.left = window.innerWidth / - 20;
+            camera.right = window.innerWidth / 20;
+            camera.top = window.innerHeight / 20;
+            camera.bottom = window.innerHeight / - 20;
+            
+        }
+    } else{
+        camera.aspect = window.innerWidth / window.innerHeight;
     }
 
+    camera.updateProjectionMatrix();
 }
 
 function onKeyDown(e) {
@@ -339,12 +360,15 @@ function onKeyDown(e) {
             break;
         case 49: //1
             camera=camera1;
+            currentCameraNumber=1;
             break;
         case 50: //2
             camera=camera2;
+            currentCameraNumber=2;
             break;
         case 51: //3
             camera=camera3;
+            currentCameraNumber=3;
             break;
 
     }
@@ -390,8 +414,7 @@ function init() {
     prepareCoordinatesSpheric();
     createScene();
     createCameras();
-    
-    
+
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("resize", onResize);
@@ -399,8 +422,8 @@ function init() {
 
 function animate() {
     'use strict';
-    
     var delta = clock.getDelta();
+    //console.log("delta", delta);
 
     // Update
     checkMovement(delta);
