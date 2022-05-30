@@ -14,11 +14,8 @@ var planet, rocket, R, garbage = new Array(4);
 
 var clock, currentCameraNumber;
 
-var spherical_position;
-
-
 //coordenadas esfericas
-var R, alpha, epsilon;
+var R, rocket_phi, rocket_theta;
 
 
 function addCylinder(obj, x, y, z, radiusTop, radiusBot, height) {
@@ -134,7 +131,7 @@ function createRocket(obj, x, y, z){
 }
 
 function randomBetween(min, max){
-    return Math.floor(Math.random() * (max - min) + min);
+    return Math.random() * (max - min) + min;
 }
 
 function addGarbage(obj, i, spherical_position){
@@ -145,14 +142,22 @@ function addGarbage(obj, i, spherical_position){
     else if (Math.floor(i/5) == 1)
         addTetrahedron(obj, spherical_position.x, spherical_position.y, spherical_position.z, R/20, 10);
     else if (Math.floor(i/5) == 2)
-        addSphere(obj, spherical_position.x, spherical_position.y, spherical_position.z, R/24, 5, 5);
+        addSphere(obj, spherical_position.x, spherical_position.y, spherical_position.z, R/20, 5, 5);
     else if (Math.floor(i/5) == 3)
-        addTorus(obj, spherical_position.x, spherical_position.y, spherical_position.z, R/24, R/24);
+        addTorus(obj, spherical_position.x, spherical_position.y, spherical_position.z, R/20, R/20);
     else
-        addCube(obj, spherical_position.x, spherical_position.y, spherical_position.z, R/24, R/24, R/24);
+        addCube(obj, spherical_position.x, spherical_position.y, spherical_position.z, R/20, R/20, R/20);
 
 }
 
+function getRandomPositionPlanet(){
+    let random_phi = randomBetween(-Math.PI, Math.PI);
+    let random_theta = randomBetween(-Math.PI/2, Math.PI/2);
+    
+    let spherical_position = new THREE.Spherical(1.2 * R, random_phi, random_theta);
+
+    return spherical_position;
+}
 
 function createGarbage(obj, n) {
     'use strict';
@@ -165,27 +170,29 @@ function createGarbage(obj, n) {
 
     for (let i = 0; i < n; i++) {
 
-        let random_phi = randomBetween(-Math.PI, Math.PI);
-        let random_theta = randomBetween(-Math.PI/2, Math.PI/2);
-        spherical_position = new THREE.Vector3();
-        spherical_position.setFromSphericalCoords(1.2*R, random_phi, random_theta);
+        let spherical_position = getRandomPositionPlanet();
+        let cartesian_position = new THREE.Vector3();
+        cartesian_position.setFromSphericalCoords(spherical_position.radius, spherical_position.phi, spherical_position.theta);
 
-        
-        if(spherical_position.x <= 0 && spherical_position.y >= 0){
-            addGarbage(garbage[0], i, spherical_position)
+        if(cartesian_position.x <= 0 && cartesian_position.y >= 0){
+            addGarbage(garbage[0], i, cartesian_position)
         }
-        else if(spherical_position.x >= 0 && spherical_position.y >= 0){
-            addGarbage(garbage[1], i, spherical_position)
+        else if(cartesian_position.x >= 0 && cartesian_position.y >= 0){
+            addGarbage(garbage[1], i, cartesian_position)
         }
-        else if(spherical_position.x <= 0 && spherical_position.y <= 0){
-            addGarbage(garbage[2], i, spherical_position)
+        else if(cartesian_position.x <= 0 && cartesian_position.y <= 0){
+            addGarbage(garbage[2], i, cartesian_position)
         }
-        else if(spherical_position.x >= 0 && spherical_position.y <= 0){
-            addGarbage(garbage[3], i, spherical_position)
+        else if(cartesian_position.x >= 0 && cartesian_position.y <= 0){
+            addGarbage(garbage[3], i, cartesian_position)
         }
 
     }
- 
+
+    planet.add(garbage[0]);
+    planet.add(garbage[1]);
+    planet.add(garbage[2]);
+    planet.add(garbage[3]);
 
 }
 
@@ -200,13 +207,16 @@ function createPlanet(x, y, z){
     createRocket(planet, 0, 0, 0);
     planet.add(rocket);
 
-    rocket.position.set(0, 1.2*R, 0);
+    let spherical_position = getRandomPositionPlanet();
+    let rocket_position = new THREE.Vector3();
+    rocket_position.setFromSphericalCoords(spherical_position.radius, spherical_position.phi, spherical_position.theta);
+    rocket_phi = spherical_position.phi;
+    rocket_theta = spherical_position.theta;
+    console.log("phi ", rocket_phi, "theta ", rocket_theta);
+
+    rocket.position.set(rocket_position.x, rocket_position.y, rocket_position.z);
 
     createGarbage(planet, 25);
-    planet.add(garbage[0]);
-    planet.add(garbage[1]);
-    planet.add(garbage[2]);
-    planet.add(garbage[3]);
 
     scene.add(rocket);
 
@@ -227,49 +237,42 @@ function createScene() {
     createPlanet(0, 0, 0);
 }
 
-function prepareCoordinatesSpheric(){
-    alpha = 0;
-    epsilon = 0;
-
-    //var alpha = Math.atan(rocket.position.z/rocket.position.x);
-    //var thelta = Math.acos(rocket.position.y/R);
-    //var radiusSpheric = Math.sqrt(Math.pow(rocket.position.x, 2) +  Math.pow(rocket.position.y, 2)+ Math.pow(rocket.position.z, 2));
-}
-
 function movimentLatRightRocket(delta){
-    alpha = alpha < 2*Math.PI ? alpha+delta : 2*Math.PI;
+    rocket_phi = rocket_phi < 2*Math.PI ? rocket_phi+delta : 0;
   
-    rocket.position.x = 1.2 * R * Math.cos(alpha) * Math.sin(epsilon);
-    rocket.position.z = 1.2 * R * Math.sin(alpha) * Math.sin(epsilon);
-    rocket.position.y = 1.2 * R * Math.cos(epsilon);
+    rocket.position.x = 1.2 * R * Math.cos(rocket_phi) * Math.sin(rocket_theta);
+    rocket.position.z = 1.2 * R * Math.sin(rocket_phi) * Math.sin(rocket_theta);
+    rocket.position.y = 1.2 * R * Math.cos(rocket_theta);
   
     detectColision();
 }   
 
 function movimentLatLeftRocket(delta){
-    alpha = alpha > 0 ? alpha-delta : 0;
+    rocket_phi = rocket_phi > 0 ? rocket_phi-delta : 2*Math.PI;
   
-    rocket.position.x = 1.2 * R * Math.cos(alpha) * Math.sin(epsilon);
-    rocket.position.z = 1.2 * R * Math.sin(alpha) * Math.sin(epsilon);
-    rocket.position.y = 1.2 * R * Math.cos(epsilon);
+    rocket.position.x = 1.2 * R * Math.cos(rocket_phi) * Math.sin(rocket_theta);
+    rocket.position.z = 1.2 * R * Math.sin(rocket_phi) * Math.sin(rocket_theta);
+    rocket.position.y = 1.2 * R * Math.cos(rocket_theta);
+    
     detectColision();
 } 
 
 function movimentLonDownRocket(delta){
-    epsilon = epsilon < Math.PI ? epsilon+delta : Math.PI;
+    rocket_theta = rocket_theta < 2*Math.PI ? rocket_theta+delta : 0;
     
-    rocket.position.x = 1.2* R * Math.cos(alpha) * Math.sin(epsilon);
-    rocket.position.z = 1.2* R * Math.sin(alpha) * Math.sin(epsilon);
-    rocket.position.y = 1.2 *R * Math.cos(epsilon);
+    rocket.position.x = 1.2* R * Math.cos(rocket_phi) * Math.sin(rocket_theta);
+    rocket.position.z = 1.2* R * Math.sin(rocket_phi) * Math.sin(rocket_theta);
+    rocket.position.y = 1.2 *R * Math.cos(rocket_theta);
+
     detectColision();
 }   
 
 function movimentLonUpRocket(delta){
-    epsilon = epsilon > 0 ? epsilon-delta : 0;
+    rocket_theta = rocket_theta > 0 ? rocket_theta-delta : 2*Math.PI;
     
-    rocket.position.x = 1.2 * R * Math.cos(alpha) * Math.sin(epsilon);
-    rocket.position.z = 1.2 *R * Math.sin(alpha) * Math.sin(epsilon);
-    rocket.position.y = 1.2 *R * Math.cos(epsilon);
+    rocket.position.x = 1.2 * R * Math.cos(rocket_phi) * Math.sin(rocket_theta);
+    rocket.position.z = 1.2 *R * Math.sin(rocket_phi) * Math.sin(rocket_theta);
+    rocket.position.y = 1.2 *R * Math.cos(rocket_theta);
 
     detectColision();
 } 
@@ -289,7 +292,8 @@ function detectColision(){
 function checkColision(obj){
     var distance = Math.pow( R/10,2);
 
-    var distance_coord = Math.pow((rocket.position.x - obj.position.x),2) + Math.pow((rocket.position.y - obj.position.y),2) + Math.pow((rocket.position.z - obj.position.z),2);
+    var distance_coord = Math.pow((rocket.position.x - obj.position.x),2) + 
+        Math.pow((rocket.position.y - obj.position.y),2) + Math.pow((rocket.position.z - obj.position.z),2);
     //console.log("Distancia" , distance);
     //console.log("Distancia_coord" , distance_coord);
     return distance_coord < distance;
@@ -457,7 +461,6 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
    
-    prepareCoordinatesSpheric();
     createScene();
     createCameras();
 
