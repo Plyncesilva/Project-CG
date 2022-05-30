@@ -1,5 +1,5 @@
 
-const { OrthographicCamera, Spherical } = require("./three");
+const { OrthographicCamera, Spherical, Vector3 } = require("./three");
 
 var camera, camera1, camera2, camera3, scene, renderer;
 var geometry, mesh;
@@ -12,6 +12,8 @@ var moveRight = false, moveLeft = false; //Latitude
 var planet, rocket, R, garbage;
 
 var clock, currentCameraNumber;
+
+var spherical_position;
 
 
 //coordenadas esfericas
@@ -140,21 +142,22 @@ function createGarbage(obj, n) {
     garbage = new THREE.Group();
 
     for (let i = 0; i < n; i++) {
-        let random_x = randomBetween(-1.2*R, 1.2*R);
-        let random_y = randomBetween(- Math.sqrt(Math.pow(1.2*R, 2) - Math.pow(random_x, 2)) , 
-                                        Math.sqrt(Math.pow(1.2*R, 2) - Math.pow(random_x, 2)));
-        let z = Math.pow(-1, i) * Math.sqrt(Math.pow(1.2*R, 2) - Math.pow(random_x, 2) - Math.pow(random_y, 2));
+
+        let random_phi = randomBetween(-Math.PI, Math.PI);
+        let random_theta = randomBetween(-Math.PI, Math.PI);
+        spherical_position = new THREE.Vector3();
+        spherical_position.setFromSphericalCoords(R, random_phi, random_theta);
 
         if (Math.floor(i/5) == 0)
-            addDodecahedron(garbage, random_x, random_y, z, R/20);
+            addDodecahedron(garbage, spherical_position.x, spherical_position.y, spherical_position.z, R/20);
         else if (Math.floor(i/5) == 1)
-            addTetrahedron(garbage, random_x, random_y, z, R/20, 10);
+            addTetrahedron(garbage, spherical_position.x, spherical_position.y, spherical_position.z, R/20, 10);
         else if (Math.floor(i/5) == 2)
-            addSphere(garbage, random_x, random_y, z, R/24, 5, 5);
+            addSphere(garbage, spherical_position.x, spherical_position.y, spherical_position.z, R/24, 5, 5);
         else if (Math.floor(i/5) == 3)
-            addTorus(garbage, random_x, random_y, z, R/24, R/24);
+            addTorus(garbage, spherical_position.x, spherical_position.y, spherical_position.z, R/24, R/24);
         else
-            addCube(garbage, random_x, random_y, z, R/24, R/24, R/24);
+            addCube(garbage, spherical_position.x, spherical_position.y, spherical_position.z, R/24, R/24, R/24);
     }
 
 }
