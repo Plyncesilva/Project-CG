@@ -8,8 +8,9 @@ var geometry, mesh;
 var moveUp = false, moveDown = false; //Longitude
 var moveRight = false, moveLeft = false; //Latitude
 
+var numberHemisf=0;
 
-var planet, rocket, R, garbage;
+var planet, rocket, R, garbage = new Array(4);
 
 var clock, currentCameraNumber;
 
@@ -136,29 +137,55 @@ function randomBetween(min, max){
     return Math.floor(Math.random() * (max - min) + min);
 }
 
+function addGarbage(obj, i, spherical_position){
+    //console.log("lista", obj);
+
+    if (Math.floor(i/5) == 0)
+        addDodecahedron(obj, spherical_position.x, spherical_position.y, spherical_position.z, R/20);
+    else if (Math.floor(i/5) == 1)
+        addTetrahedron(obj, spherical_position.x, spherical_position.y, spherical_position.z, R/20, 10);
+    else if (Math.floor(i/5) == 2)
+        addSphere(obj, spherical_position.x, spherical_position.y, spherical_position.z, R/24, 5, 5);
+    else if (Math.floor(i/5) == 3)
+        addTorus(obj, spherical_position.x, spherical_position.y, spherical_position.z, R/24, R/24);
+    else
+        addCube(obj, spherical_position.x, spherical_position.y, spherical_position.z, R/24, R/24, R/24);
+
+}
+
+
 function createGarbage(obj, n) {
     'use strict';
 
-    garbage = new THREE.Group();
+    garbage = new Array(4);
+    garbage[0]= new THREE.Group();
+    garbage[1]= new THREE.Group();
+    garbage[2]= new THREE.Group();
+    garbage[3]= new THREE.Group();
 
     for (let i = 0; i < n; i++) {
 
         let random_phi = randomBetween(-Math.PI, Math.PI);
-        let random_theta = randomBetween(-Math.PI, Math.PI);
+        let random_theta = randomBetween(-Math.PI/2, Math.PI/2);
         spherical_position = new THREE.Vector3();
-        spherical_position.setFromSphericalCoords(R, random_phi, random_theta);
+        spherical_position.setFromSphericalCoords(1.2*R, random_phi, random_theta);
 
-        if (Math.floor(i/5) == 0)
-            addDodecahedron(garbage, spherical_position.x, spherical_position.y, spherical_position.z, R/20);
-        else if (Math.floor(i/5) == 1)
-            addTetrahedron(garbage, spherical_position.x, spherical_position.y, spherical_position.z, R/20, 10);
-        else if (Math.floor(i/5) == 2)
-            addSphere(garbage, spherical_position.x, spherical_position.y, spherical_position.z, R/24, 5, 5);
-        else if (Math.floor(i/5) == 3)
-            addTorus(garbage, spherical_position.x, spherical_position.y, spherical_position.z, R/24, R/24);
-        else
-            addCube(garbage, spherical_position.x, spherical_position.y, spherical_position.z, R/24, R/24, R/24);
+        
+        if(spherical_position.x <= 0 && spherical_position.y >= 0){
+            addGarbage(garbage[0], i, spherical_position)
+        }
+        else if(spherical_position.x >= 0 && spherical_position.y >= 0){
+            addGarbage(garbage[1], i, spherical_position)
+        }
+        else if(spherical_position.x <= 0 && spherical_position.y <= 0){
+            addGarbage(garbage[2], i, spherical_position)
+        }
+        else if(spherical_position.x >= 0 && spherical_position.y <= 0){
+            addGarbage(garbage[3], i, spherical_position)
+        }
+
     }
+ 
 
 }
 
@@ -174,11 +201,13 @@ function createPlanet(x, y, z){
     planet.add(rocket);
 
     rocket.position.set(0, 1.2*R, 0);
-    // var test = new THREE.Spherical();
-    // rocket.position.set(test);
 
     createGarbage(planet, 25);
-    planet.add(garbage);
+    planet.add(garbage[0]);
+    planet.add(garbage[1]);
+    planet.add(garbage[2]);
+    planet.add(garbage[3]);
+
     scene.add(rocket);
 
     scene.add(planet);
@@ -246,10 +275,12 @@ function movimentLonUpRocket(delta){
 } 
 
 function detectColision(){
-    console.log("count garbage", garbage.children.length);
-    for(var i = 0; i < garbage.children.length; i++){
-        if(checkColision(garbage.children[i])){
-            garbage.remove(garbage.children[i]);
+    
+    for(var i = 0; i < garbage[numberHemisf].children.length; i++){
+        //console.log("hemisf trash", garbage[numberHemisf].children.length);
+           
+        if(checkColision(garbage[numberHemisf].children[i])){
+            garbage[numberHemisf].remove(garbage[numberHemisf].children[i]);
         }
     }
 }
@@ -303,6 +334,18 @@ function createCameras() {
 
 function checkMovement(delta) {
     'use strict';
+
+    //console.log("numero de lixos", garbage[0].children.length+garbage[1].children.length+garbage[2].children.length+garbage[3].children.length );
+    
+    if(rocket.position.x <=0 && rocket.position.y >=0)
+        numberHemisf=0;
+    else if(rocket.position.x >=0 && rocket.position.y >=0)
+        numberHemisf=1;
+    else if(rocket.position.x <=0 && rocket.position.y <=0)
+        numberHemisf=2;
+    else if(rocket.position.x >=0 && rocket.position.y <=0)
+        numberHemisf=3;
+
 
     //latitude
     if(moveLeft){
