@@ -238,41 +238,41 @@ function createScene() {
 }
 
 function movimentLatRightRocket(delta){
-    rocket_phi = rocket_phi < 2*Math.PI ? rocket_phi+delta : 0;
-  
-    rocket.position.x = 1.2 * R * Math.cos(rocket_phi) * Math.sin(rocket_theta);
-    rocket.position.z = 1.2 * R * Math.sin(rocket_phi) * Math.sin(rocket_theta);
-    rocket.position.y = 1.2 * R * Math.cos(rocket_theta);
+    rocket_phi = rocket_phi < Math.PI ? rocket_phi+delta : -Math.PI;
+    
+    let rocket_position = new THREE.Vector3();
+    rocket_position.setFromSphericalCoords(1.2*R, rocket_phi, rocket_theta);    
+    rocket.position.set(rocket_position.x, rocket_position.y, rocket_position.z);
   
     detectColision();
 }   
 
 function movimentLatLeftRocket(delta){
-    rocket_phi = rocket_phi > 0 ? rocket_phi-delta : 2*Math.PI;
-  
-    rocket.position.x = 1.2 * R * Math.cos(rocket_phi) * Math.sin(rocket_theta);
-    rocket.position.z = 1.2 * R * Math.sin(rocket_phi) * Math.sin(rocket_theta);
-    rocket.position.y = 1.2 * R * Math.cos(rocket_theta);
+    rocket_phi = rocket_phi > -Math.PI ? rocket_phi-delta : Math.PI;
+
+    let rocket_position = new THREE.Vector3();
+    rocket_position.setFromSphericalCoords(1.2*R, rocket_phi, rocket_theta);    
+    rocket.position.set(rocket_position.x, rocket_position.y, rocket_position.z);
     
     detectColision();
 } 
 
 function movimentLonDownRocket(delta){
-    rocket_theta = rocket_theta < 2*Math.PI ? rocket_theta+delta : 0;
+    rocket_theta = rocket_theta < Math.PI ? rocket_theta+delta : -Math.PI;
     
-    rocket.position.x = 1.2* R * Math.cos(rocket_phi) * Math.sin(rocket_theta);
-    rocket.position.z = 1.2* R * Math.sin(rocket_phi) * Math.sin(rocket_theta);
-    rocket.position.y = 1.2 *R * Math.cos(rocket_theta);
+    let rocket_position = new THREE.Vector3();
+    rocket_position.setFromSphericalCoords(1.2*R, rocket_phi, rocket_theta);    
+    rocket.position.set(rocket_position.x, rocket_position.y, rocket_position.z);
 
     detectColision();
 }   
 
 function movimentLonUpRocket(delta){
-    rocket_theta = rocket_theta > 0 ? rocket_theta-delta : 2*Math.PI;
-    
-    rocket.position.x = 1.2 * R * Math.cos(rocket_phi) * Math.sin(rocket_theta);
-    rocket.position.z = 1.2 *R * Math.sin(rocket_phi) * Math.sin(rocket_theta);
-    rocket.position.y = 1.2 *R * Math.cos(rocket_theta);
+    rocket_theta = rocket_theta > -Math.PI ? rocket_theta-delta : Math.PI;
+
+    let rocket_position = new THREE.Vector3();
+    rocket_position.setFromSphericalCoords(1.2*R, rocket_phi, rocket_theta);    
+    rocket.position.set(rocket_position.x, rocket_position.y, rocket_position.z);
 
     detectColision();
 } 
@@ -294,8 +294,7 @@ function checkColision(obj){
 
     var distance_coord = Math.pow((rocket.position.x - obj.position.x),2) + 
         Math.pow((rocket.position.y - obj.position.y),2) + Math.pow((rocket.position.z - obj.position.z),2);
-    //console.log("Distancia" , distance);
-    //console.log("Distancia_coord" , distance_coord);
+
     return distance_coord < distance;
 
 }
@@ -305,14 +304,14 @@ function createCameras() {
     'use strict';
 
     camera1 =  new THREE.OrthographicCamera(window.innerWidth / - 15, window.innerWidth / 15, window.innerHeight / 15, window.innerHeight / - 15 );    
-    camera1.position.set(20,20,20);
+    camera1.position.set(30,30,30);
     camera1.lookAt(scene.position);
     
     camera2 =  new THREE.PerspectiveCamera(70,
         window.innerWidth / window.innerHeight,
         1,
         1000);
-    camera2.position.set(0,0,199);
+    camera2.position.set(0,0,100);
     camera2.lookAt(scene.position);
   
     
