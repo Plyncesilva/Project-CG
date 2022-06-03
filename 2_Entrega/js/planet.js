@@ -1,5 +1,4 @@
 
-const { OrthographicCamera, Spherical, Vector3 } = require("./three");
 
 var camera, camera1, camera2, camera3, scene, renderer;
 var geometry, mesh;
@@ -11,6 +10,9 @@ var moveRight = false, moveLeft = false; //Latitude
 var numberHemisf=0;
 
 var planet, rocket, R, garbage = new Array(4);
+var rocket_center;
+var pointing_UP = true, pointing_DOWN = false;
+var pointing_RIGHT = false, pointing_LEFT = false;
 
 var clock, currentCameraNumber;
 
@@ -119,14 +121,18 @@ function createRocket(obj, x, y, z){
     'use strict';
 
     rocket = new THREE.Group();
+    rocket_center = new THREE.Group();
 
-    addCylinder(rocket, x, y, z, 1, 1, R/20);
-    addCylinder(rocket, x, y + R/20, z, 0, 1, R/20);
 
-    addCapsule(rocket, x + 1, y - R/40, x + 1, 0.2, 1.2);
-    addCapsule(rocket, x - 1, y - R/40, x + 1, 0.2, 1.2);
-    addCapsule(rocket, x + 1, y - R/40, x - 1, 0.2, 1.2);
-    addCapsule(rocket, x - 1, y - R/40, x - 1, 0.2, 1.2);
+    addCylinder(rocket_center, x, y, z, 1, 1, R/20);
+    addCylinder(rocket_center, x, y + R/20, z, 0, 1, R/20);
+
+    addCapsule(rocket_center, x + 1, y - R/40, x + 1, 0.2, 1.2);
+    addCapsule(rocket_center, x - 1, y - R/40, x + 1, 0.2, 1.2);
+    addCapsule(rocket_center, x + 1, y - R/40, x - 1, 0.2, 1.2);
+    addCapsule(rocket_center, x - 1, y - R/40, x - 1, 0.2, 1.2);
+
+    rocket.add(rocket_center);
 
 }
 
@@ -205,14 +211,12 @@ function createPlanet(x, y, z){
     addSphere(planet, 0, 0, 0, R, 20, 20);
     
     createRocket(planet, 0, 0, 0);
-    planet.add(rocket);
 
     let spherical_position = getRandomPositionPlanet();
     let rocket_position = new THREE.Vector3();
     rocket_position.setFromSphericalCoords(spherical_position.radius, spherical_position.phi, spherical_position.theta);
     rocket_phi = spherical_position.phi;
     rocket_theta = spherical_position.theta;
-    console.log("phi ", rocket_phi, "theta ", rocket_theta);
 
     rocket.position.set(rocket_position.x, rocket_position.y, rocket_position.z);
 
@@ -227,6 +231,40 @@ function createPlanet(x, y, z){
     planet.position.z = z;
 }
 
+function setOrientation(orientation) {
+    switch (orientation) {
+        case 1:
+            //cima
+            pointing_UP = true;
+            pointing_DOWN = false;
+            pointing_LEFT = false;
+            pointing_RIGHT = false;
+            break;
+        case 2:
+            //baixo
+            pointing_UP = false;
+            pointing_DOWN = true;
+            pointing_LEFT = false;
+            pointing_RIGHT = false;
+            break;
+        case 3:
+            //esquerda
+            pointing_UP = false;
+            pointing_DOWN = false;
+            pointing_LEFT = true;
+            pointing_RIGHT = false;
+            break;
+        case 4:
+            //direita
+            pointing_UP = false;
+            pointing_DOWN = false;
+            pointing_LEFT = false;
+            pointing_RIGHT = true;
+            break;
+                                
+    }
+}
+
 function createScene() {
     'use strict';
     
@@ -238,41 +276,64 @@ function createScene() {
 }
 
 function movimentLatRightRocket(delta){
-    rocket_phi = rocket_phi < Math.PI ? rocket_phi+delta : -Math.PI;
-    
-    let rocket_position = new THREE.Vector3();
-    rocket_position.setFromSphericalCoords(1.2*R, rocket_phi, rocket_theta);    
-    rocket.position.set(rocket_position.x, rocket_position.y, rocket_position.z);
-  
-    detectColision();
-}   
-
-function movimentLatLeftRocket(delta){
-    rocket_phi = rocket_phi > -Math.PI ? rocket_phi-delta : Math.PI;
-
-    let rocket_position = new THREE.Vector3();
-    rocket_position.setFromSphericalCoords(1.2*R, rocket_phi, rocket_theta);    
-    rocket.position.set(rocket_position.x, rocket_position.y, rocket_position.z);
-    
-    detectColision();
-} 
-
-function movimentLonDownRocket(delta){
     rocket_theta = rocket_theta < Math.PI ? rocket_theta+delta : -Math.PI;
     
     let rocket_position = new THREE.Vector3();
     rocket_position.setFromSphericalCoords(1.2*R, rocket_phi, rocket_theta);    
     rocket.position.set(rocket_position.x, rocket_position.y, rocket_position.z);
+  
+    if (!pointing_RIGHT){
+        setOrientation(4);
+        rocket_center.lookAt(0, 0, 0);
+        rocket_center.rotateZ(Math.PI/2);
+    }
 
     detectColision();
 }   
 
-function movimentLonUpRocket(delta){
+function movimentLatLeftRocket(delta){
     rocket_theta = rocket_theta > -Math.PI ? rocket_theta-delta : Math.PI;
 
     let rocket_position = new THREE.Vector3();
     rocket_position.setFromSphericalCoords(1.2*R, rocket_phi, rocket_theta);    
     rocket.position.set(rocket_position.x, rocket_position.y, rocket_position.z);
+    
+    if (!pointing_LEFT){
+        setOrientation(3);
+        rocket_center.lookAt(0, 0, 0);
+        rocket_center.rotateZ(-Math.PI/2);
+    }
+
+    detectColision();
+} 
+
+function movimentLonDownRocket(delta){
+    rocket_phi = rocket_phi < Math.PI ? rocket_phi+delta : -Math.PI;
+    
+    let rocket_position = new THREE.Vector3();
+    rocket_position.setFromSphericalCoords(1.2*R, rocket_phi, rocket_theta);    
+    rocket.position.set(rocket_position.x, rocket_position.y, rocket_position.z);
+
+    if (!pointing_DOWN){
+        setOrientation(2);
+        rocket_center.lookAt(0, 0, 0);
+        rocket_center.rotateZ(Math.PI);
+    }
+
+    detectColision();
+}   
+
+function movimentLonUpRocket(delta){
+    rocket_phi = rocket_phi > -Math.PI ? rocket_phi-delta : Math.PI;
+
+    let rocket_position = new THREE.Vector3();
+    rocket_position.setFromSphericalCoords(1.2*R, rocket_phi, rocket_theta);    
+    rocket.position.set(rocket_position.x, rocket_position.y, rocket_position.z);
+
+    if (!pointing_UP){
+        setOrientation(1);
+        rocket_center.lookAt(0, 0, 0);
+    }
 
     detectColision();
 } 
@@ -320,16 +381,15 @@ function createCameras() {
         1,
         1000);
 
-    rocket.add(camera3);
+    rocket_center.add(camera3);
     
-    camera3.position.set(rocket.position.x + R/15, rocket.position.y + R/15, rocket.position.z +R/15);
+    camera3.position.set(0, -5, -10);
 
-    camera3.lookAt(rocket.position);
+    camera3.lookAt(rocket.position.x, rocket.position.y + R/40 + R/20, rocket.position.z);
     
         
     scene.add(camera1);
     scene.add(camera2);
-    scene.add(camera3);
 
     camera = camera1;
     currentCameraNumber=1;
@@ -358,7 +418,6 @@ function checkMovement(delta) {
     if(moveRight)
         movimentLatRightRocket(delta);  
 
-    
     //longitude
    
     if(moveDown)
@@ -367,9 +426,9 @@ function checkMovement(delta) {
     if(moveUp)
         movimentLonUpRocket(delta);
 
-    camera3.position.set(rocket.position.x + R/15, rocket.position.y + R/15, rocket.position.z +R/15);
-
-    camera3.lookAt(rocket.position);
+    // camera3.position.set(rocket.position.x + R/15, rocket.position.y + R/15, rocket.position.z +R/15);
+    rocket.lookAt(0, 0, 0);
+    //camera3.lookAt(0, 0, 0);
 }
 
 function onResize() {
