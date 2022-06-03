@@ -77,16 +77,6 @@ function addDodecahedron(obj, x, y, z, radius) {
     obj.add(mesh);
 }
 
-function addRectangle(obj, x, y, z, dimx, dimy, dimz) {
-    'use strict';
-
-    var rectangle_material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true }); 
-    geometry = new THREE.BoxGeometry(dimx, dimy, dimz);
-    mesh = new THREE.Mesh(geometry, rectangle_material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
-}
-
 function addTorus(obj, x, y, z, radius, tubeRadius) {
     'use strict';
 
@@ -141,8 +131,6 @@ function randomBetween(min, max){
 }
 
 function addGarbage(obj, i, spherical_position){
-    //console.log("lista", obj);
-
     if (Math.floor(i/5) == 0)
         addDodecahedron(obj, spherical_position.x, spherical_position.y, spherical_position.z, R/20);
     else if (Math.floor(i/5) == 1)
@@ -261,7 +249,6 @@ function setOrientation(orientation) {
             pointing_LEFT = false;
             pointing_RIGHT = true;
             break;
-                                
     }
 }
 
@@ -409,7 +396,6 @@ function checkMovement(delta) {
     else if(rocket.position.x >=0 && rocket.position.y <=0)
         numberHemisf=3;
 
-
     //latitude
     if(moveLeft){
         movimentLatLeftRocket(delta);
@@ -418,21 +404,19 @@ function checkMovement(delta) {
     if(moveRight)
         movimentLatRightRocket(delta);  
 
-    //longitude
-   
+    //longitude   
     if(moveDown)
         movimentLonDownRocket(delta);
 
     if(moveUp)
         movimentLonUpRocket(delta);
 
-    // camera3.position.set(rocket.position.x + R/15, rocket.position.y + R/15, rocket.position.z +R/15);
     rocket.lookAt(0, 0, 0);
-    //camera3.lookAt(0, 0, 0);
 }
 
 function onResize() {
     'use strict';
+    
     renderer.setSize(window.innerWidth, window.innerHeight);
     
     if(currentCameraNumber==1){
@@ -478,9 +462,7 @@ function onKeyDown(e) {
             camera=camera3;
             currentCameraNumber=3;
             break;
-
     }
-    
 }
 
 function onKeyUp(e) {
@@ -529,9 +511,9 @@ function init() {
 
 function animate() {
     'use strict';
+    
     var delta = clock.getDelta();
-    //console.log("delta", delta);
-
+    
     // Update
     checkMovement(delta);
 
