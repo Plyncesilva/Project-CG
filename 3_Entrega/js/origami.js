@@ -7,7 +7,7 @@ var clock, currentCameraNumber, camera_before_pause;
 var scene, renderer;
 var geometry, mesh;
 
-var base_origami, head_origami, body_origami;
+var base_origami, head_origami, body_origami, origami;
 
 var pause, restart;
 var paused = false;
@@ -155,7 +155,6 @@ function createGround(){
 
 function createOrigami(){
     'use strict';
-
     base_origami = new THREE.Group();
 
     geometry = new THREE.CylinderGeometry( 0.8 / Math.sqrt( 2 ), 1 / Math.sqrt( 2 ), 1, 4, 1 ); // new THREE.CylinderGeometry( 13.5, 9.7, 3.4, 4, 2 ); 
@@ -184,7 +183,9 @@ function createOrigami(){
     //head_origami.faces.push( new THREE.Face3( 0, 1, 2 ) );
     //head_origami.computeFaceNormals();
     //addTriangle(head_origami, 30, 30, 30, v1, v2, v3);
+  
     scene.add(head_origami);
+    
 }
 
 
@@ -332,82 +333,6 @@ function createScene() {
 
 }
 
-/*
-function movimentLatRightRocket(delta){
-    rocket_theta = rocket_theta < Math.PI ? rocket_theta+delta : -Math.PI;
-    
-    let rocket_position = new THREE.Vector3();
-    rocket_position.setFromSphericalCoords(1.2*R, rocket_phi, rocket_theta);    
-    rocket.position.set(rocket_position.x, rocket_position.y, rocket_position.z);
-  
-    if (!pointing_RIGHT){
-        setOrientation(4);
-        rocket_center.lookAt(0, 0, 0);
-        rocket_center.rotateZ(Math.PI/2);
-    }
-
-    detectColision();
-}   
-
-function movimentLatLeftRocket(delta){
-    rocket_theta = rocket_theta > -Math.PI ? rocket_theta-delta : Math.PI;
-
-    let rocket_position = new THREE.Vector3();
-    rocket_position.setFromSphericalCoords(1.2*R, rocket_phi, rocket_theta);    
-    rocket.position.set(rocket_position.x, rocket_position.y, rocket_position.z);
-    
-    if (!pointing_LEFT){
-        setOrientation(3);
-        rocket_center.lookAt(0, 0, 0);
-        rocket_center.rotateZ(-Math.PI/2);
-    }
-
-    detectColision();
-} 
-
-function movimentLonDownRocket(delta){
-    rocket_phi = rocket_phi < Math.PI ? rocket_phi+delta : -Math.PI;
-    
-    let rocket_position = new THREE.Vector3();
-    rocket_position.setFromSphericalCoords(1.2*R, rocket_phi, rocket_theta);    
-    rocket.position.set(rocket_position.x, rocket_position.y, rocket_position.z);
-
-    if (!pointing_DOWN){
-        setOrientation(2);
-        rocket_center.lookAt(0, 0, 0);
-        rocket_center.rotateZ(Math.PI);
-    }
-
-    detectColision();
-}   
-
-function movimentLonUpRocket(delta){
-    rocket_phi = rocket_phi > -Math.PI ? rocket_phi-delta : Math.PI;
-
-    let rocket_position = new THREE.Vector3();
-    rocket_position.setFromSphericalCoords(1.2*R, rocket_phi, rocket_theta);    
-    rocket.position.set(rocket_position.x, rocket_position.y, rocket_position.z);
-
-    if (!pointing_UP){
-        setOrientation(1);
-        rocket_center.lookAt(0, 0, 0);
-    }
-
-    detectColision();
-} 
-
-function detectColision(){
-    
-    for(var i = 0; i < garbage[numberHemisf].children.length; i++){
-
-        if(checkColision(garbage[numberHemisf].children[i])){
-            garbage[numberHemisf].remove(garbage[numberHemisf].children[i]);
-        }
-    }
-}
- */
-
-
 function createCameras() {
     'use strict';
 
@@ -490,6 +415,18 @@ function checkMovement(delta) {
 
 
 }
+function resetOrigami(){
+    paused = false;
+    pause.invisible = true;
+    camera = camera1;
+    currentCameraNumber = 1;
+    camera_before_pause=1;
+    scene.remove(base_origami);
+    scene.remove(head_origami);
+    scene.remove(body_origami);
+
+    createOrigami();
+}
 
 function onResize() {
     'use strict';
@@ -504,7 +441,16 @@ function onResize() {
             camera.bottom = window.innerHeight / - 20;
             
         }
-    } else{
+    } else if(currentCameraNumber==4){
+        if (window.innerHeight > 0 && window.innerWidth > 0) {
+            camera.left = window.innerWidth / - 20;
+            camera.right = window.innerWidth / 20;
+            camera.top = window.innerHeight / 20;
+            camera.bottom = window.innerHeight / - 20;
+            
+        }
+    
+    }else{
         camera.aspect = window.innerWidth / window.innerHeight;
     }
 
@@ -532,7 +478,10 @@ function onKeyDown(e) {
         
         case 82: // R
         case 114: // r
-            rotateBodyOrigamiRight = true;
+            if(paused)
+                resetOrigami();
+            else
+                rotateBodyOrigamiRight = true;
             break;
 
         case 84: // T
