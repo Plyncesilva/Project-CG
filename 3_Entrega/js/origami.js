@@ -1,12 +1,16 @@
-//import { VRButton } from 'js/VRButton.js';
+//import * as VRButton from 'VRButton.js';
+//import * as THREE from './vendor/three/build/three.module.js';
+//const THREE = require("./three");
 
 
 
 var camera, camera1, camera2, camera3, scene, renderer;
 var geometry, mesh;
 
+var base_origami, head_origami, body_origami;
 
-var moveUp = false, moveDown = false; //Longitude
+
+var rotateBaseOrigamiLeft = false, rotateBaseOrigamiRight = false;
 var moveRight = false, moveLeft = false; //Latitude
 
 var numberHemisf=0;
@@ -23,6 +27,18 @@ var R, rocket_phi, rocket_theta;
 
 
 var ground;
+
+function addTriangle(obj, x, y, z, v1, v2, v3) {
+    'use strict';
+    
+    var triangle_material = new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true });
+    geometry = new THREE.Triangle(v1, v2, v3);
+    mesh = new THREE.Mesh(geometry, triangle_material);
+    
+    mesh.position.set(x, y, z);
+    
+    obj.add(mesh)
+}
 
 
 function addCylinder(obj, x, y, z, radiusTop, radiusBot, height) {
@@ -134,6 +150,39 @@ function createGround(){
     scene.add(ground);
 }
 
+function createOrigami(){
+    'use strict';
+
+    base_origami = new THREE.Group();
+
+    geometry = new THREE.CylinderGeometry( 0.8 / Math.sqrt( 2 ), 1 / Math.sqrt( 2 ), 1, 4, 1 ); // new THREE.CylinderGeometry( 13.5, 9.7, 3.4, 4, 2 ); 
+    //geometry.rotateZ( Math.PI / 4 );
+    geometry.computeVertexNormals(); // normals will be 'flat' normals
+    var trapezoid_material = new THREE.MeshBasicMaterial({ color:  0x00ff00 , wireframe: false }); 
+    mesh = new THREE.Mesh(geometry, trapezoid_material);
+    mesh.scale.set( 4, 2, 10 );
+    mesh.position.set(0, 40, 0);
+    base_origami.add(mesh);
+
+    scene.add(base_origami);
+
+    
+    body_origami = new THREE.Group();
+
+    scene.add(body_origami);
+    
+    head_origami = new THREE.Group();
+    var v1 = new THREE.Vector3(0,0,0);
+    var v2 = new THREE.Vector3(30,0,0);
+    var v3 = new THREE.Vector3(30,30,0);
+    //head_origami.vertices.push(v1);
+    //head_origami.vertices.push(v2);
+    //head_origami.vertices.push(v3);
+    //head_origami.faces.push( new THREE.Face3( 0, 1, 2 ) );
+    //head_origami.computeFaceNormals();
+    //addTriangle(head_origami, 30, 30, 30, v1, v2, v3);
+    scene.add(head_origami);
+}
 
 /*
 function createRocket(obj, x, y, z){
@@ -289,6 +338,7 @@ function createScene() {
     scene.add(new THREE.AxisHelper(10));
     
     createGround();
+    createOrigami();
 }
 
 /*
@@ -384,7 +434,7 @@ function createCameras() {
         window.innerWidth / window.innerHeight,
         1,
         1000);
-    camera1.position.set(150,20,150);
+    camera1.position.set(100,20,0);
     camera1.lookAt(scene.position);
     
     camera2 =  new THREE.PerspectiveCamera(70,
@@ -392,10 +442,10 @@ function createCameras() {
         1,
         1000);
 
-    camera2.position.set(0, 150, 0);
+    camera2.position.set(0, 300, 0);
     camera2.lookAt(scene.position);
 
-    //camera3 = new THREE.StereoCamera();
+    camera3 = new THREE.StereoCamera();
 
     //camera3.position.set(10,10,10);
 
@@ -408,27 +458,19 @@ function createCameras() {
     currentCameraNumber=1;
 }
 
-/*
+
 function checkMovement(delta) {
     'use strict';
- 
-    if(rocket.position.x <=0 && rocket.position.y >=0)
-        numberHemisf=0;
-    else if(rocket.position.x >=0 && rocket.position.y >=0)
-        numberHemisf=1;
-    else if(rocket.position.x <=0 && rocket.position.y <=0)
-        numberHemisf=2;
-    else if(rocket.position.x >=0 && rocket.position.y <=0)
-        numberHemisf=3;
-
     //latitude
-    if(moveLeft){
-        movimentLatLeftRocket(delta);
+    if(rotateBaseOrigamiLeft){
+        base_origami.rotateY(delta);
     }
 
-    if(moveRight)
-        movimentLatRightRocket(delta);  
+    if(rotateBaseOrigamiRight){
+        base_origami.rotateY(-delta);
+    }
 
+    /*
     //longitude   
     if(moveDown)
         movimentLonDownRocket(delta);
@@ -436,8 +478,8 @@ function checkMovement(delta) {
     if(moveUp)
         movimentLonUpRocket(delta);
 
-    rocket.lookAt(0, 0, 0);
-}*/
+    rocket.lookAt(0, 0, 0);*/
+}
 
 function onResize() {
     'use strict';
@@ -465,10 +507,12 @@ function onKeyDown(e) {
     switch (e.keyCode) {
         case 81: // Q
         case 113: // q
+        rotateBaseOrigamiLeft = true;
             break;
 
         case 87: // W
         case 119: // w
+        rotateBaseOrigamiRight = true;
             break;
 
         case 69: // E
@@ -485,6 +529,15 @@ function onKeyDown(e) {
 
         case 89: // Y
         case 121: // y
+            break;
+
+
+        case 65: //A
+        case 97: //a
+            break;
+
+        case 83:  //S
+        case 115: //s
             break;
 
 
@@ -506,6 +559,19 @@ function onKeyDown(e) {
 
 function onKeyUp(e) {
     'use strict';
+
+    switch (e.keyCode) {
+        case 81: // Q
+        case 113: // q
+            rotateBaseOrigamiLeft = false;
+            break;
+
+        case 87: // W
+        case 119: // w
+            rotateBaseOrigamiRight = false;
+            break;
+    }
+
     /*    
     switch (e.keyCode) {
         case 38: // Arrow Up
@@ -557,7 +623,7 @@ function animate() {
     var delta = clock.getDelta();
     
     // Update
-    //checkMovement(delta);
+    checkMovement(delta);
 
     // Display
     render();
