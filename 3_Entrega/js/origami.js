@@ -7,14 +7,14 @@ var clock, currentCameraNumber, camera_before_pause;
 var scene, renderer;
 var geometry, mesh;
 
-var base_origami, head_origami, body_origami, origami;
+var origami;
 
 var pause, restart;
 var paused = false;
 
-var rotateBaseOrigamiLeft = false, rotateBaseOrigamiRight = false;
-var rotateHeadOrigamiLeft = false, rotateHeadOrigamiRight = false;
-var rotateBodyOrigamiLeft = false, rotateBodyOrigamiRight = false;
+var rotateFirstStepLeft = false, rotateFirstStepRight = false;
+var rotateSecondStepLeft = false, rotateSecondStepRight = false;
+var rotateThirdStepLeft = false, rotateThirdStepRight = false;
 
 var numberHemisf=0;
 
@@ -22,6 +22,8 @@ var planet, rocket, R, garbage = new Array(4);
 var rocket_center;
 var pointing_UP = true, pointing_DOWN = false;
 var pointing_RIGHT = false, pointing_LEFT = false;
+
+var first_step, second_step, third_step;
 
 
 
@@ -153,9 +155,50 @@ function createGround(){
     scene.add(ground);
 }
 
-function createOrigami(){
+function create_first_step(){
+    'use strict'
+
+    var first_triangle = new THREE.Geometry(); 
+    var second_triangle = new THREE.Geometry(); 
+
+    var v1 = new THREE.Vector3(0,-5,0);
+    var v2 = new THREE.Vector3(0,0,20);
+    var v3 = new THREE.Vector3(0,5,0);
+    var v4 = new THREE.Vector3(0,0,-20);
+
+    first_triangle.vertices.push(v1);
+    first_triangle.vertices.push(v2);
+    first_triangle.vertices.push(v3);
+
+    second_triangle.vertices.push(v1);
+    second_triangle.vertices.push(v3);
+    second_triangle.vertices.push(v4);
+
+    first_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
+    second_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
+    
+    var first_triangle_material = new THREE.Mesh( first_triangle, new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true }));
+    var second_triangle_material = new THREE.Mesh( second_triangle, new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true }));
+
+    first_step = new THREE.Group();
+    first_step.position.set(0,40,30);
+    first_step.add(first_triangle_material);
+    first_step.add(second_triangle_material);
+
+    first_step.add(new THREE.AxisHelper(10));
+    scene.add(first_step);
+
+
+}
+
+
+function create_second_step(){
+
+}
+
+function create_third_step(){
     'use strict';
-    base_origami = new THREE.Group();
+    /*first_step = new THREE.Group();
 
     geometry = new THREE.CylinderGeometry( 0.8 / Math.sqrt( 2 ), 1 / Math.sqrt( 2 ), 1, 4, 1 ); // new THREE.CylinderGeometry( 13.5, 9.7, 3.4, 4, 2 ); 
     //geometry.rotateZ( Math.PI / 4 );
@@ -164,28 +207,44 @@ function createOrigami(){
     mesh = new THREE.Mesh(geometry, trapezoid_material);
     mesh.scale.set( 4, 2, 10 );
     mesh.position.set(0, 40, 0);
-    base_origami.add(mesh);
+    first_step.add(mesh);
 
-    scene.add(base_origami);
+    scene.add(first_step);
 
     
-    body_origami = new THREE.Group();
+    second_step = new THREE.Group();
 
-    scene.add(body_origami);
+    scene.add(second_step);
     
-    head_origami = new THREE.Group();
-    var v1 = new THREE.Vector3(0,0,0);
-    var v2 = new THREE.Vector3(30,0,0);
-    var v3 = new THREE.Vector3(30,30,0);
-    //head_origami.vertices.push(v1);
-    //head_origami.vertices.push(v2);
-    //head_origami.vertices.push(v3);
-    //head_origami.faces.push( new THREE.Face3( 0, 1, 2 ) );
-    //head_origami.computeFaceNormals();
-    //addTriangle(head_origami, 30, 30, 30, v1, v2, v3);
+    //third_step = new THREE.Group();
+    //var v1 = new THREE.Vector3(0, 0, 10);
+    //var v2 = new THREE.Vector3(10, 0, 0);
+    //var v3 = new THREE.Vector3(10, 10, 0);
+    //third_step.vertices.push(v1);
+    //third_step.vertices.push(v2);
+    //third_step.vertices.push(v3);
+    //third_step.faces.push( new THREE.Face3( 0, 1, 2 ) );
+    //third_step.computeFaceNormals();
+    //addTriangle(third_step, 30, 30, 30, v1, v2, v3);
+
+
+    var triangle = new THREE.Geometry(); 
+    var v1 = new THREE.Vector3(0,40,0);
+    var v2 = new THREE.Vector3(10,50,-10);
+    var v3 = new THREE.Vector3(0,40,-20);
+
+    triangle.vertices.push(v1);
+    triangle.vertices.push(v2);
+    triangle.vertices.push(v3);
+
+    triangle.faces.push( new THREE.Face3( 0, 1, 2 ) );
+
+    var third_step = new THREE.Mesh( triangle, new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true }));
+    third_step.rotateY(Math.PI/2);
+    scene.add(third_step);
   
-    scene.add(head_origami);
-    
+    //scene.add(third_step);
+    */
 }
 
 
@@ -203,123 +262,6 @@ function createPauseScreen(){
     
 }
 
-/*
-function createRocket(obj, x, y, z){
-    'use strict';
-
-    rocket = new THREE.Group();
-    rocket_center = new THREE.Group();
-
-
-    addCylinder(rocket_center, x, y, z, 1, 1, R/20);
-    addCylinder(rocket_center, x, y + R/20, z, 0, 1, R/20);
-
-    addCapsule(rocket_center, x + 1, y - R/40, x + 1, 0.2, 1.2);
-    addCapsule(rocket_center, x - 1, y - R/40, x + 1, 0.2, 1.2);
-    addCapsule(rocket_center, x + 1, y - R/40, x - 1, 0.2, 1.2);
-    addCapsule(rocket_center, x - 1, y - R/40, x - 1, 0.2, 1.2);
-
-    rocket.add(rocket_center);
-
-}
-
-function randomBetween(min, max){
-    return Math.random() * (max - min) + min;
-}
-
-function addGarbage(obj, i, spherical_position){
-    if (Math.floor(i/5) == 0)
-       addDodecahedron(obj, spherical_position.x, spherical_position.y, spherical_position.z, R/20);
-    else if (Math.floor(i/5) == 1)
-        addTetrahedron(obj, spherical_position.x, spherical_position.y, spherical_position.z, R/20, 10);
-    else if (Math.floor(i/5) == 2)
-        addSphere(obj, spherical_position.x, spherical_position.y, spherical_position.z, R/20, 5, 5);
-    else if (Math.floor(i/5) == 3)
-        addTorus(obj, spherical_position.x, spherical_position.y, spherical_position.z, R/20, R/20);
-    else
-        addCube(obj, spherical_position.x, spherical_position.y, spherical_position.z, R/20, R/20, R/20);
-
-}
-
-function getRandomPositionPlanet(){
-    let random_phi = randomBetween(-Math.PI, Math.PI);
-    let random_theta = randomBetween(-Math.PI/2, Math.PI/2);
-    
-    let spherical_position = new THREE.Spherical(1.2 * R, random_phi, random_theta);
-
-    return spherical_position;
-}
-
-function createGarbage(obj, n) {
-    'use strict';
-
-    garbage = new Array(4);
-    garbage[0]= new THREE.Group();
-    garbage[1]= new THREE.Group();
-    garbage[2]= new THREE.Group();
-    garbage[3]= new THREE.Group();
-
-    for (let i = 0; i < n; i++) {
-
-        let spherical_position = getRandomPositionPlanet();
-        let cartesian_position = new THREE.Vector3();
-        cartesian_position.setFromSphericalCoords(spherical_position.radius, spherical_position.phi, spherical_position.theta);
-
-        if(cartesian_position.x <= 0 && cartesian_position.y >= 0){
-            addGarbage(garbage[0], i, cartesian_position)
-        }
-        else if(cartesian_position.x >= 0 && cartesian_position.y >= 0){
-            addGarbage(garbage[1], i, cartesian_position)
-        }
-        else if(cartesian_position.x <= 0 && cartesian_position.y <= 0){
-            addGarbage(garbage[2], i, cartesian_position)
-        }
-        else if(cartesian_position.x >= 0 && cartesian_position.y <= 0){
-            addGarbage(garbage[3], i, cartesian_position)
-        }
-
-    }
-
-    planet.add(garbage[0]);
-    planet.add(garbage[1]);
-    planet.add(garbage[2]);
-    planet.add(garbage[3]);
-
-}
-
-function setOrientation(orientation) {
-    switch (orientation) {
-        case 1:
-            //cima
-            pointing_UP = true;
-            pointing_DOWN = false;
-            pointing_LEFT = false;
-            pointing_RIGHT = false;
-            break;
-        case 2:
-            //baixo
-            pointing_UP = false;
-            pointing_DOWN = true;
-            pointing_LEFT = false;
-            pointing_RIGHT = false;
-            break;
-        case 3:
-            //esquerda
-            pointing_UP = false;
-            pointing_DOWN = false;
-            pointing_LEFT = true;
-            pointing_RIGHT = false;
-            break;
-        case 4:
-            //direita
-            pointing_UP = false;
-            pointing_DOWN = false;
-            pointing_LEFT = false;
-            pointing_RIGHT = true;
-            break;
-    }
-} */
-
 function createScene() {
     'use strict';
     
@@ -328,7 +270,8 @@ function createScene() {
     scene.add(new THREE.AxisHelper(10));
     
     createGround();
-    createOrigami();
+    create_first_step();
+    //createOrigami();
     createPauseScreen();
 
 }
@@ -340,7 +283,7 @@ function createCameras() {
         window.innerWidth / window.innerHeight,
         1,
         1000);
-    camera1.position.set(100,20,0);
+    camera1.position.set(100,50,0);
     camera1.lookAt(scene.position);
     
     camera2 =  new THREE.PerspectiveCamera(70,
@@ -348,7 +291,7 @@ function createCameras() {
         1,
         1000);
 
-    camera2.position.set(0, 300, 0);
+    camera2.position.set(0, 200, 0);
     camera2.lookAt(scene.position);
 
     camera3 = new THREE.StereoCamera();
@@ -389,28 +332,28 @@ function remove_pause_camera(){
 function checkMovement(delta) {
     'use strict';
  
-    if(rotateBaseOrigamiLeft){
-        base_origami.rotateY(delta);
+    if(rotateFirstStepLeft){
+        first_step.rotateY(delta);
     }
 
-    if(rotateBaseOrigamiRight){
-        base_origami.rotateY(-delta);
+    if(rotateFirstStepRight){
+        first_step.rotateY(-delta);
     }
 
-    if(rotateBodyOrigamiLeft){
-        body_origami.rotateY(delta);
+    if(rotateSecondStepLeft){
+        second_step.rotateY(delta);
     }
 
-    if(rotateBodyOrigamiRight){
-        body_origami.rotateY(-delta);
+    if(rotateSecondStepRight){
+        second_step.rotateY(-delta);
     }
 
-    if(rotateHeadOrigamiLeft){
-        head_origami.rotateY(delta);
+    if(rotateThirdStepLeft){
+        third_step.rotateY(delta);
     }
 
-    if(rotateHeadOrigamiRight){
-        head_origami.rotateY(-delta);
+    if(rotateThirdStepRight){
+        third_step.rotateY(-delta);
     }
 
 
@@ -421,9 +364,9 @@ function resetOrigami(){
     camera = camera1;
     currentCameraNumber = 1;
     camera_before_pause=1;
-    scene.remove(base_origami);
-    scene.remove(head_origami);
-    scene.remove(body_origami);
+    scene.remove(first_step);
+    scene.remove(third_step);
+    scene.remove(second_step);
 
     createOrigami();
 }
@@ -463,17 +406,17 @@ function onKeyDown(e) {
     switch (e.keyCode) {
         case 81: // Q
         case 113: // q
-            rotateBaseOrigamiLeft = true;
+            rotateFirstStepLeft = true;
             break;
 
         case 87: // W
         case 119: // w
-            rotateBaseOrigamiRight = true;
+            rotateFirstStepRight = true;
             break;
 
         case 69: // E
         case 101: // e
-            rotateBodyOrigamiLeft = true;
+            rotateSecondStepLeft = true;
             break;
         
         case 82: // R
@@ -481,17 +424,17 @@ function onKeyDown(e) {
             if(paused)
                 resetOrigami();
             else
-                rotateBodyOrigamiRight = true;
+                rotateSecondStepRight = true;
             break;
 
         case 84: // T
         case 116: // t
-            rotateHeadOrigamiLeft = true;
+            rotateThirdStepLeft = true;
             break;
 
         case 89: // Y
         case 121: // y
-            rotateHeadOrigamiRight = true;
+            rotateThirdStepRight = true;
             break;
 
 
@@ -540,32 +483,32 @@ function onKeyUp(e) {
     switch (e.keyCode) {
         case 81: // Q
         case 113: // q
-            rotateBaseOrigamiLeft = false;
+            rotateFirstStepLeft = false;
             break;
 
         case 87: // W
         case 119: // w
-            rotateBaseOrigamiRight = false;
+            rotateFirstStepRight = false;
             break;
 
         case 69: // E
         case 101: // e
-            rotateBodyOrigamiLeft = false;
+            rotateSecondStepLeft = false;
             break;
         
         case 82: // R
         case 114: // r
-            rotateBodyOrigamiRight = false;
+            rotateSecondStepRight = false;
             break;
 
         case 84: // T
         case 116: // t
-            rotateHeadOrigamiLeft = false;
+            rotateThirdStepLeft = false;
             break;
 
         case 89: // Y
         case 121: // y
-            rotateHeadOrigamiRight = false;
+            rotateThirdStepRight = false;
             break;
     }
 
