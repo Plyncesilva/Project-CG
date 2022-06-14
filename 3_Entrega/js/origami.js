@@ -1,37 +1,30 @@
 //import * as VRButton from 'VRButton.js';
-//import * as THREE from './vendor/three/build/three.module.js';
+//import * as THREE from './js/three.module.js';
 //const THREE = require("./three");
 
-var camera, camera1, camera2, camera3, camera4, cameraPause;
+var camera, camera1, camera2, stereoCamera, camera4, cameraPause;
 var clock, currentCameraNumber, camera_before_pause;
 var scene, renderer;
 var geometry, mesh;
 
 var origami;
 
-var pause, restart;
+var pause;
 var paused = false;
 
 var rotateFirstStepLeft = false, rotateFirstStepRight = false;
 var rotateSecondStepLeft = false, rotateSecondStepRight = false;
 var rotateThirdStepLeft = false, rotateThirdStepRight = false;
 
-var numberHemisf=0;
-
-var planet, rocket, R, garbage = new Array(4);
-var rocket_center;
-var pointing_UP = true, pointing_DOWN = false;
-var pointing_RIGHT = false, pointing_LEFT = false;
-
 var first_step, second_step, third_step;
 
 
-
-//coordenadas esfericas
-var R, rocket_phi, rocket_theta;
-
-
 var ground;
+
+//spotlight
+var spotlight_1, spotlight_2,  spotlight_3 ;
+
+
 
 function addTriangle(obj, x, y, z, v1, v2, v3) {
     'use strict';
@@ -161,10 +154,10 @@ function create_first_step(){
     var first_triangle = new THREE.Geometry(); 
     var second_triangle = new THREE.Geometry(); 
 
-    var v1 = new THREE.Vector3(0,-5,0);
-    var v2 = new THREE.Vector3(0,0,20);
-    var v3 = new THREE.Vector3(0,5,0);
-    var v4 = new THREE.Vector3(0,0,-20);
+    var v1 = new THREE.Vector3(5,-5,0);
+    var v2 = new THREE.Vector3(0,0,10);
+    var v3 = new THREE.Vector3(5,5,0);
+    var v4 = new THREE.Vector3(0,0,-10);
 
     first_triangle.vertices.push(v1);
     first_triangle.vertices.push(v2);
@@ -177,8 +170,8 @@ function create_first_step(){
     first_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
     second_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
     
-    var first_triangle_material = new THREE.Mesh( first_triangle, new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true }));
-    var second_triangle_material = new THREE.Mesh( second_triangle, new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true }));
+    var first_triangle_material = new THREE.Mesh( first_triangle, new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: false, side: THREE.DoubleSide }));
+    var second_triangle_material = new THREE.Mesh( second_triangle, new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: false,  side: THREE.DoubleSide }));
 
     first_step = new THREE.Group();
     first_step.position.set(0,40,30);
@@ -193,6 +186,74 @@ function create_first_step(){
 
 
 function create_second_step(){
+
+    var first_triangle = new THREE.Geometry(); 
+    var second_triangle = new THREE.Geometry(); 
+    var third_triangle = new THREE.Geometry(); 
+    var fourth_triangle = new THREE.Geometry(); 
+    var fifth_triangle = new THREE.Geometry(); 
+    var sixth_triangle = new THREE.Geometry(); 
+  
+
+    var v1 = new THREE.Vector3(0,5,0);
+    var v2 = new THREE.Vector3(0, 2.5, 5);
+    var v3 = new THREE.Vector3(0,-2.5, 3);
+    var v4 = new THREE.Vector3(0,-10,0);
+    var v5 = new THREE.Vector3(0, -2.5, -3);
+    var v6 = new THREE.Vector3(0, 2.5,-5);
+    var v7 = new THREE.Vector3(0,0,0);
+
+    first_triangle.vertices.push(v7);
+    first_triangle.vertices.push(v1);
+    first_triangle.vertices.push(v6);
+
+    second_triangle.vertices.push(v6);
+    second_triangle.vertices.push(v7);
+    second_triangle.vertices.push(v5);
+
+    third_triangle.vertices.push(v5);
+    third_triangle.vertices.push(v7);
+    third_triangle.vertices.push(v4);
+    
+    fourth_triangle.vertices.push(v4);
+    fourth_triangle.vertices.push(v7);
+    fourth_triangle.vertices.push(v3);
+    
+    fifth_triangle.vertices.push(v3);
+    fifth_triangle.vertices.push(v7);
+    fifth_triangle.vertices.push(v2);
+
+    sixth_triangle.vertices.push(v2);
+    sixth_triangle.vertices.push(v7);
+    sixth_triangle.vertices.push(v1);
+
+    first_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
+    second_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
+    third_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
+    fourth_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
+    fifth_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
+    sixth_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
+    
+    var first_triangle_material = new THREE.Mesh( first_triangle, new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: false, side: THREE.DoubleSide }));
+    var second_triangle_material = new THREE.Mesh( second_triangle, new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: false,  side: THREE.DoubleSide }));
+    var third_triangle_material = new THREE.Mesh( third_triangle, new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: false, side: THREE.DoubleSide }));
+    var fourth_triangle_material = new THREE.Mesh( fourth_triangle, new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: false,  side: THREE.DoubleSide }));
+    var fifth_triangle_material = new THREE.Mesh( fifth_triangle, new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: false, side: THREE.DoubleSide }));
+    var sixth_triangle_material = new THREE.Mesh( sixth_triangle, new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: false,  side: THREE.DoubleSide }));
+
+
+
+    second_step = new THREE.Group();
+    second_step.position.set(0,40, 0);
+    second_step.add(first_triangle_material);
+    second_step.add(second_triangle_material);
+    second_step.add(third_triangle_material);
+    second_step.add(fourth_triangle_material);
+    second_step.add(fifth_triangle_material);
+    second_step.add(sixth_triangle_material);
+
+    second_step.add(new THREE.AxisHelper(10));
+    scene.add(second_step);
 
 }
 
@@ -271,8 +332,10 @@ function createScene() {
     
     createGround();
     create_first_step();
+    create_second_step();
     //createOrigami();
     createPauseScreen();
+    createSpotlight();
 
 }
 
@@ -294,11 +357,11 @@ function createCameras() {
     camera2.position.set(0, 200, 0);
     camera2.lookAt(scene.position);
 
-    camera3 = new THREE.StereoCamera();
+    stereoCamera = new THREE.StereoCamera();
 
-    //camera3.position.set(10,10,10);
+
+
     camera4 = new THREE.OrthographicCamera(window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / - 20 );
-    
     camera4.position.x = 50;
     camera4.position.y = 50;
     camera4.position.z = 50;
@@ -307,7 +370,6 @@ function createCameras() {
     scene.add(camera1);
     scene.add(camera2);
     scene.add(camera4);
-    //scene.add(camera3);
 
     camera = camera1;
     currentCameraNumber = 1;
@@ -323,7 +385,7 @@ function remove_pause_camera(){
             camera = camera2;
             break;
         //    case 3:
-        //camera = camera3;
+        //camera = stereoCamera;
         //break;
 
     }
@@ -358,6 +420,27 @@ function checkMovement(delta) {
 
 
 }
+
+function createSpotlight() {
+    'use strict';
+    
+    spotlight_1 = new THREE.SpotLight ( 0xffffff, 50, 20, Math.PI*0.05, 0.25, 0.5 );
+    spotlight_1.position.set( 30, 30, 25 );
+    spotlight_1.target.position.set( first_step.position.x, first_step.position.y, first_step.position.z );
+
+    scene.add(spotlight_1);
+    scene.add(spotlight_1.target);
+
+    //spotlight_2 = new THREE.SpotLight ( color, int, dist, angle, penunumbra, decay );
+    //spotlight_2.position.set( slposx, slposy, slposz );
+    //spotlight_2.target.position.set( tposx, tposy, tposz );
+
+    //spotlight_3 = new THREE.SpotLight ( color, int, dist, angle, penunumbra, decay );
+    //spotlight_3.position.set( slposx, slposy, slposz );
+    //spotlight_3.target.position.set( tposx, tposy, tposz );
+
+}
+
 function resetOrigami(){
     paused = false;
     pause.invisible = true;
@@ -470,10 +553,27 @@ function onKeyDown(e) {
             break;
         case 51: //3
             if(!paused){
-                camera=camera3;
+                camera=stereoCamera;
                 currentCameraNumber=3;
             }
             break;
+        
+        //spotligth
+        case 90: // Z
+        case 122: //z
+            spotlight_1.visible = !spotlight_1.visible;
+            break;
+
+        case 88: //X
+        case 120: //x
+            spotlight_2.visible = !spotlight_2.visible;
+            break;
+        
+        case 67: //C
+        case 99: //c
+            spotlight_3.visible = !spotlight_3.visible;
+            break;
+
     }
 }
 
@@ -516,7 +616,21 @@ function onKeyUp(e) {
 
 function render() {
     'use strict';
+    //stereoCamera.update();
+    
+    //const size = new THREE.Vector2();
+    //renderer.getSize(size);
 
+    //renderer.setScissorTest(true);
+    
+    //renderer.setScissor(0, 0, size.width / 2, si//ze.height);
+    //renderer.setViewport(0, 0, size.width / 2, s//ize.height);
+    //renderer.render(scene, stereoCamera.cameraL)//;
+//
+    ////renderer.setScissor(size.width / 2, 0, size.width / 2, size.height);
+    ////renderer.setViewport(size.width / 2, 0, size.width / 2, size.height);
+    //renderer.render(scene, stereoCamera.cameraR);
+    //renderer.setScissorTest(false);
     renderer.render(scene, camera);
 }
 
