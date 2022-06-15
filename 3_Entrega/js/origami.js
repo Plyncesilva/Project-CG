@@ -258,54 +258,96 @@ function create_second_step(){
 }
 
 function create_third_step(){
-    'use strict';
-    /*first_step = new THREE.Group();
 
-    geometry = new THREE.CylinderGeometry( 0.8 / Math.sqrt( 2 ), 1 / Math.sqrt( 2 ), 1, 4, 1 ); // new THREE.CylinderGeometry( 13.5, 9.7, 3.4, 4, 2 ); 
-    //geometry.rotateZ( Math.PI / 4 );
-    geometry.computeVertexNormals(); // normals will be 'flat' normals
-    var trapezoid_material = new THREE.MeshBasicMaterial({ color:  0x00ff00 , wireframe: false }); 
-    mesh = new THREE.Mesh(geometry, trapezoid_material);
-    mesh.scale.set( 4, 2, 10 );
-    mesh.position.set(0, 40, 0);
-    first_step.add(mesh);
-
-    scene.add(first_step);
-
-    
-    second_step = new THREE.Group();
-
-    scene.add(second_step);
-    
-    //third_step = new THREE.Group();
-    //var v1 = new THREE.Vector3(0, 0, 10);
-    //var v2 = new THREE.Vector3(10, 0, 0);
-    //var v3 = new THREE.Vector3(10, 10, 0);
-    //third_step.vertices.push(v1);
-    //third_step.vertices.push(v2);
-    //third_step.vertices.push(v3);
-    //third_step.faces.push( new THREE.Face3( 0, 1, 2 ) );
-    //third_step.computeFaceNormals();
-    //addTriangle(third_step, 30, 30, 30, v1, v2, v3);
-
-
-    var triangle = new THREE.Geometry(); 
-    var v1 = new THREE.Vector3(0,40,0);
-    var v2 = new THREE.Vector3(10,50,-10);
-    var v3 = new THREE.Vector3(0,40,-20);
-
-    triangle.vertices.push(v1);
-    triangle.vertices.push(v2);
-    triangle.vertices.push(v3);
-
-    triangle.faces.push( new THREE.Face3( 0, 1, 2 ) );
-
-    var third_step = new THREE.Mesh( triangle, new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true }));
-    third_step.rotateY(Math.PI/2);
-    scene.add(third_step);
+    var first_triangle = new THREE.Geometry(); 
+    var second_triangle = new THREE.Geometry(); 
+    var third_triangle = new THREE.Geometry(); 
+    var fourth_triangle = new THREE.Geometry(); 
+    var fifth_triangle = new THREE.Geometry(); 
+    var sixth_triangle = new THREE.Geometry(); 
+    var seventh_triangle = new THREE.Geometry(); 
+    var eighth_triangle = new THREE.Geometry(); 
   
-    //scene.add(third_step);
-    */
+
+    var v1 = new THREE.Vector3(0,11,7);
+    var v2 = new THREE.Vector3(0, 13, 5);
+    var v3 = new THREE.Vector3(0, 12, 3);
+    var v4 = new THREE.Vector3(0, 11, 5);
+    var v5 = new THREE.Vector3(0, 3, 7);
+    var v6 = new THREE.Vector3(0, 2, 4);
+    var v7 = new THREE.Vector3(0,0,4);
+    var v8 = new THREE.Vector3(0,0,0);
+    var v9 = new THREE.Vector3(0,5,-2);
+    var v10 = new THREE.Vector3(0,0,-5);
+    var v11 = new THREE.Vector3(0,7,-9);
+    var v12 = new THREE.Vector3(0,4,4);
+
+    first_triangle.vertices.push(v1);
+    first_triangle.vertices.push(v2);
+    first_triangle.vertices.push(v3);
+
+    second_triangle.vertices.push(v3);
+    second_triangle.vertices.push(v4);
+    second_triangle.vertices.push(v6);
+
+    third_triangle.vertices.push(v5);
+    third_triangle.vertices.push(v6);
+    third_triangle.vertices.push(v4);
+    
+    fourth_triangle.vertices.push(v6);
+    fourth_triangle.vertices.push(v7);
+    fourth_triangle.vertices.push(v5);
+    
+    fifth_triangle.vertices.push(v8);
+    fifth_triangle.vertices.push(v7);
+    fifth_triangle.vertices.push(v12);
+
+    sixth_triangle.vertices.push(v8);
+    sixth_triangle.vertices.push(v9);
+    sixth_triangle.vertices.push(v12);
+
+    seventh_triangle.vertices.push(v10);
+    seventh_triangle.vertices.push(v9);
+    seventh_triangle.vertices.push(v8);
+
+    eighth_triangle.vertices.push(v11);
+    eighth_triangle.vertices.push(v10);
+    eighth_triangle.vertices.push(v9);
+
+    first_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
+    second_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
+    third_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
+    fourth_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
+    fifth_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
+    sixth_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
+    seventh_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
+    eighth_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
+
+    var first_triangle_material = new THREE.Mesh( first_triangle, new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false, side: THREE.DoubleSide }));
+    var second_triangle_material = new THREE.Mesh( second_triangle, new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false,  side: THREE.DoubleSide }));
+    var third_triangle_material = new THREE.Mesh( third_triangle, new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false, side: THREE.DoubleSide }));
+    var fourth_triangle_material = new THREE.Mesh( fourth_triangle, new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false,  side: THREE.DoubleSide }));
+    var fifth_triangle_material = new THREE.Mesh( fifth_triangle, new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false, side: THREE.DoubleSide }));
+    var sixth_triangle_material = new THREE.Mesh( sixth_triangle, new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false,  side: THREE.DoubleSide }));
+    var seventh_triangle_material = new THREE.Mesh( seventh_triangle, new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false,  side: THREE.DoubleSide }));
+    var eighth_triangle_material = new THREE.Mesh( eighth_triangle, new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false,  side: THREE.DoubleSide }));
+
+
+
+    third_step = new THREE.Group();
+    third_step.position.set(0,35, -30);
+    third_step.add(first_triangle_material);
+    third_step.add(second_triangle_material);
+    third_step.add(third_triangle_material);
+    third_step.add(fourth_triangle_material);
+    third_step.add(fifth_triangle_material);
+    third_step.add(sixth_triangle_material);
+    third_step.add(seventh_triangle_material);
+    third_step.add(eighth_triangle_material);
+
+    third_step.add(new THREE.AxisHelper(10));
+    scene.add(third_step);
+
 }
 
 
@@ -333,6 +375,7 @@ function createScene() {
     createGround();
     create_first_step();
     create_second_step();
+    create_third_step();
     //createOrigami();
     createPauseScreen();
     createSpotlight();
