@@ -7,8 +7,6 @@ var clock, currentCameraNumber, camera_before_pause;
 var scene, renderer;
 var geometry, mesh;
 
-var origami;
-
 var pause;
 var paused = false;
 
@@ -16,10 +14,17 @@ var rotateFirstStepLeft = false, rotateFirstStepRight = false;
 var rotateSecondStepLeft = false, rotateSecondStepRight = false;
 var rotateThirdStepLeft = false, rotateThirdStepRight = false;
 
+//origami
+var origami;
+
 var first_step, second_step, third_step;
 
 
 var ground;
+
+
+//diretional light
+var dlight;
 
 //spotlight
 var spotlight_1, spotlight_2,  spotlight_3 ;
@@ -51,18 +56,6 @@ function addCylinder(obj, x, y, z, radiusTop, radiusBot, height) {
     obj.add(mesh)
 }
 
-function addTetrahedron(obj, x, y, z, radius, detail) {
-    'use strict';
-    
-    var tetrahedron_material = new THREE.MeshBasicMaterial({ color: 0x0044ff, wireframe: true });
-    geometry = new THREE.TetrahedronGeometry(radius, detail);
-    mesh = new THREE.Mesh(geometry, tetrahedron_material);
-    
-    mesh.position.set(x, y, z);
-    
-    obj.add(mesh)
-}
-
 
 function addSphere(obj, x, y, z, dimx, dimy, dimz) {
     'use strict';
@@ -86,26 +79,6 @@ function addCube(obj, x, y, z, dimx, dimy,dimz) {
     obj.add(mesh);
 }
 
-function addDodecahedron(obj, x, y, z, radius) {
-    'use strict';
-
-    var dod_material = new THREE.MeshBasicMaterial({ color: 0x44cc88, wireframe: true });    
-    geometry = new THREE.DodecahedronGeometry(radius);
-    mesh = new THREE.Mesh(geometry, dod_material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
-}
-
-function addTorus(obj, x, y, z, radius, tubeRadius) {
-    'use strict';
-
-    var torus_material = new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true }); 
-    geometry = new THREE.TorusGeometry(radius, tubeRadius);
-    mesh = new THREE.Mesh(geometry, torus_material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
-}
-
 function addCylinder(obj, x, y, z, dim_bot, dim_top, dim_height) {
     'use strict';
 
@@ -116,20 +89,10 @@ function addCylinder(obj, x, y, z, dim_bot, dim_top, dim_height) {
     obj.add(mesh);
 }
 
-function addCapsule(obj, x, y, z, radius, lenght){
-    'use strict';
-
-    var capsule_material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true }); 
-    geometry = new THREE.CapsuleGeometry(radius, lenght);
-    mesh = new THREE.Mesh(geometry, capsule_material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
-}
-
 function addRectangle(obj, x, y, z, dimx, dimy, dimz, color_ground) {
     'use strict';
 
-    var rectangle_material = new THREE.MeshBasicMaterial({ color: color_ground, wireframe: false }); 
+    var rectangle_material = new THREE.MeshLambertMaterial({ color: color_ground, wireframe: false }); 
     geometry = new THREE.CubeGeometry(dimx, dimy, dimz);
     mesh = new THREE.Mesh(geometry, rectangle_material);
     mesh.position.set(x, y, z);
@@ -350,6 +313,15 @@ function create_third_step(){
 
 }
 
+function createDirectionalLight(){
+    // directional light
+    dlight = new THREE.DirectionalLight( 0xFFFFFF, 5 );
+    dlight.position.set( 0, 100, 0 );
+    dlight.target.position.set( 0, 0, 0 );
+    scene.add(dlight);
+    scene.add(dlight.target);
+
+}
 
 function createPauseScreen(){
     geometry = new THREE.PlaneGeometry( 100, 200, 100);
@@ -379,6 +351,7 @@ function createScene() {
     //createOrigami();
     createPauseScreen();
     createSpotlight();
+    createDirectionalLight();
 
 }
 
@@ -467,20 +440,42 @@ function checkMovement(delta) {
 function createSpotlight() {
     'use strict';
     
-    spotlight_1 = new THREE.SpotLight ( 0xffffff, 50, 20, Math.PI*0.05, 0.25, 0.5 );
-    spotlight_1.position.set( 30, 30, 25 );
-    spotlight_1.target.position.set( first_step.position.x, first_step.position.y, first_step.position.z );
+    spotlight_1 = new THREE.SpotLight ( 0xffffff, 5, 100, Math.PI, 10 );
+    spotlight_1.position.set(0, 60,20 );
+    spotlight_1.lookAt( first_step.position.x, first_step.position.y, first_step.position.z );
+    spotlight_1.penumbra = .2;
+
+    spotlight_1.castShadow = true
+
+    var spotlighthelper = new THREE.SpotLightHelper(spotlight_1);
+    scene.add(spotlighthelper);
 
     scene.add(spotlight_1);
-    scene.add(spotlight_1.target);
 
-    //spotlight_2 = new THREE.SpotLight ( color, int, dist, angle, penunumbra, decay );
-    //spotlight_2.position.set( slposx, slposy, slposz );
-    //spotlight_2.target.position.set( tposx, tposy, tposz );
+    spotlight_2 = new THREE.SpotLight ( 0xffffff, 5, 100, Math.PI, 10 );
+    spotlight_2.position.set(0, 60,0 );
+    spotlight_2.lookAt( second_step.position.x, second_step.position.y, second_step.position.z );
+    spotlight_2.penumbra = .2;
 
-    //spotlight_3 = new THREE.SpotLight ( color, int, dist, angle, penunumbra, decay );
-    //spotlight_3.position.set( slposx, slposy, slposz );
-    //spotlight_3.target.position.set( tposx, tposy, tposz );
+    spotlight_2.castShadow = true
+
+    var spotlighthelper = new THREE.SpotLightHelper(spotlight_2);
+    scene.add(spotlighthelper);
+
+    scene.add(spotlight_2);
+
+
+    spotlight_3 = new THREE.SpotLight ( 0x444444, 5, 100, Math.PI, 10 );
+    spotlight_3.position.set(0, 60, -20 );
+    spotlight_3.lookAt( second_step.position.x, second_step.position.y, second_step.position.z );
+    spotlight_3.penumbra = .2;
+
+    spotlight_3.castShadow = true
+
+    var spotlighthelper = new THREE.SpotLightHelper(spotlight_3);
+    scene.add(spotlighthelper);
+
+    scene.add(spotlight_3);
 
 }
 
@@ -494,7 +489,9 @@ function resetOrigami(){
     scene.remove(third_step);
     scene.remove(second_step);
 
-    createOrigami();
+    create_first_step();
+    create_second_step();
+    create_third_step();
 }
 
 function onResize() {
@@ -599,6 +596,12 @@ function onKeyDown(e) {
                 camera=stereoCamera;
                 currentCameraNumber=3;
             }
+            break;
+        
+        //light 
+        case 68: // D
+        case 100: //d
+            dlight.visible = !dlight.visible;
             break;
         
         //spotligth
