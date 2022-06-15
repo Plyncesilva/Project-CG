@@ -468,7 +468,13 @@ function resetOrigami(){
     scene.remove(first_step);
     scene.remove(third_step);
     scene.remove(second_step);
+    scene.remove(spotlight_1);
+    scene.remove(spotlight_2);
+    scene.remove(spotlight_3);
+    scene.remove(dlight);
 
+    createSpotlight();
+    createDirectionalLight();
     create_first_step();
     create_second_step();
     create_third_step();
@@ -523,11 +529,8 @@ function onKeyDown(e) {
             break;
         
         case 82: // R
-        case 114: // r
-            if(paused)
-                resetOrigami();
-            else
-                rotateSecondStepRight = true;
+        case 114: // r    
+            rotateSecondStepRight = true;
             break;
 
         case 84: // T
@@ -545,8 +548,7 @@ function onKeyDown(e) {
         case 97: //a
             break;
 
-        case 83:  //S
-        case 115: //s
+        case 32:  //space
             if(paused ==false){
                 camera_before_pause = currentCameraNumber;
                 camera = camera4;
@@ -575,7 +577,8 @@ function onKeyDown(e) {
             if(!paused){
                 camera=stereoCamera;
                 currentCameraNumber=3;
-            }
+            }else
+                resetOrigami();
             break;
         
         //light 
