@@ -69,26 +69,6 @@ function addSphere(obj, x, y, z, dimx, dimy, dimz) {
     obj.add(mesh)
 }
 
-function addCube(obj, x, y, z, dimx, dimy,dimz) {
-    'use strict';
-
-    var cube_material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });    
-    geometry = new THREE.BoxGeometry(dimx, dimy, dimz);
-    mesh = new THREE.Mesh(geometry, cube_material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
-}
-
-function addCylinder(obj, x, y, z, dim_bot, dim_top, dim_height) {
-    'use strict';
-
-    var cylinder_material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true }); 
-    geometry = new THREE.CylinderGeometry(dim_bot, dim_top, dim_height);
-    mesh = new THREE.Mesh(geometry, cylinder_material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
-}
-
 function addRectangle(obj, x, y, z, dimx, dimy, dimz, color_ground) {
     'use strict';
 
@@ -345,11 +325,13 @@ function createScene() {
     scene.add(new THREE.AxisHelper(10));
     
     createGround();
+
     create_first_step();
     create_second_step();
     create_third_step();
-    //createOrigami();
+
     createPauseScreen();
+    
     createSpotlight();
     createDirectionalLight();
 
@@ -374,8 +356,6 @@ function createCameras() {
     camera2.lookAt(scene.position);
 
     stereoCamera = new THREE.StereoCamera();
-
-
 
     camera4 = new THREE.OrthographicCamera(window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / - 20 );
     camera4.position.x = 50;
@@ -465,9 +445,9 @@ function createSpotlight() {
     scene.add(spotlight_2);
 
 
-    spotlight_3 = new THREE.SpotLight ( 0x444444, 5, 100, Math.PI, 10 );
+    spotlight_3 = new THREE.SpotLight ( 0xffffff, 5, 100, Math.PI, 10 );
     spotlight_3.position.set(0, 60, -20 );
-    spotlight_3.lookAt( second_step.position.x, second_step.position.y, second_step.position.z );
+    spotlight_3.lookAt( third_step.position.x, third_step.position.y,third_step.position.z );
     spotlight_3.penumbra = .2;
 
     spotlight_3.castShadow = true
@@ -604,7 +584,7 @@ function onKeyDown(e) {
             dlight.visible = !dlight.visible;
             break;
         
-        //spotligth
+        //spotlight
         case 90: // Z
         case 122: //z
             spotlight_1.visible = !spotlight_1.visible;
