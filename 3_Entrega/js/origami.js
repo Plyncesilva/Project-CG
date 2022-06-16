@@ -2,13 +2,13 @@
 //import * as THREE from './js/three.module.js';
 //const THREE = require("./three");
 
-var camera, camera1, camera2, stereoCamera, camera4, cameraPause;
+var camera, camera1, camera2, stereoCamera;
 var clock, currentCameraNumber, camera_before_pause;
-var scene, renderer;
+var scene, pauseScene, renderer;
 var geometry, mesh;
 
 var pause;
-var paused = false;
+var ispause = false;
 
 var rotateFirstStepLeft = false, rotateFirstStepRight = false;
 var rotateSecondStepLeft = false, rotateSecondStepRight = false;
@@ -28,15 +28,16 @@ var dlight;
 
 //spotlight
 var spotlight_1, spotlight_2,  spotlight_3 ;
+var body_spotlight_1, body_spotlight_2, body_spotlight_3;
 
 
 
-function addTriangle(obj, x, y, z, v1, v2, v3) {
+function addCone(obj, x, y, z) {
     'use strict';
     
-    var triangle_material = new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true });
-    geometry = new THREE.Triangle(v1, v2, v3);
-    mesh = new THREE.Mesh(geometry, triangle_material);
+    var cone_material = new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true });
+    geometry =  new THREE.ConeGeometry(2, 4)
+    mesh = new THREE.Mesh(geometry, cone_material);
     
     mesh.position.set(x, y, z);
     
@@ -60,7 +61,7 @@ function addCylinder(obj, x, y, z, radiusTop, radiusBot, height) {
 function addSphere(obj, x, y, z, dimx, dimy, dimz) {
     'use strict';
     
-    var sphere_material = new THREE.MeshBasicMaterial({ color: 0x0000aa, wireframe: true });
+    var sphere_material = new THREE.MeshBasicMaterial({ color: 0x0011aa, wireframe: false });
     geometry = new THREE.SphereGeometry(dimx, dimy, dimz);
     mesh = new THREE.Mesh(geometry, sphere_material);
     
@@ -86,8 +87,8 @@ function createGround(){
     ground = new THREE.Group();
     
     addRectangle(ground, 0,0,0, 1000, 10,1000, 0xD2B48C);
-    addRectangle(ground, 0,10,0, 100, 10,100,0xFFFFFF );
-    addRectangle(ground, 0,20,0, 80, 10,80, 0xFF0000);
+    addRectangle(ground, 0,10,0, 150, 10, 150,0xFFFFFF );
+    addRectangle(ground, 0,20,0, 120, 10,120, 0xFF0000);
     scene.add(ground);
 }
 
@@ -117,7 +118,7 @@ function create_first_step(){
     var second_triangle_material = new THREE.Mesh( second_triangle, new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: false,  side: THREE.DoubleSide }));
 
     first_step = new THREE.Group();
-    first_step.position.set(0,40,30);
+    first_step.position.set(0, 40, 40);
     first_step.add(first_triangle_material);
     first_step.add(second_triangle_material);
 
@@ -278,7 +279,7 @@ function create_third_step(){
 
 
     third_step = new THREE.Group();
-    third_step.position.set(0,35, -30);
+    third_step.position.set(0,35, -40);
     third_step.add(first_triangle_material);
     third_step.add(second_triangle_material);
     third_step.add(third_triangle_material);
@@ -304,6 +305,9 @@ function createDirectionalLight(){
 }
 
 function createPauseScreen(){
+    pauseScene = new THREE.Scene();
+    
+    pauseScene.add(new THREE.AxisHelper(10));
     geometry = new THREE.PlaneGeometry( 100, 200, 100);
 
     var texture = new THREE.TextureLoader().load('js/pause.png');
@@ -312,8 +316,8 @@ function createPauseScreen(){
 
     pause = new THREE.Mesh(geometry, material);
     pause.invisible = false;
-    pause.position.set(50,60,30);
-    scene.add(pause);
+    pause.position.set(20,30,0);
+    pauseScene.add(pause);
     
 }
 
@@ -344,34 +348,32 @@ function createCameras() {
         window.innerWidth / window.innerHeight,
         1,
         1000);
-    camera1.position.set(100,50,0);
+    camera1.position.set(100,70,0);
     camera1.lookAt(scene.position);
     
-    camera2 =  new THREE.PerspectiveCamera(70,
-        window.innerWidth / window.innerHeight,
-        1,
-        1000);
+    camera2 = new THREE.OrthographicCamera(window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / -20 );    
 
-    camera2.position.set(0, 200, 0);
+    camera2.position.set(0, 50, 0);
     camera2.lookAt(scene.position);
 
     stereoCamera = new THREE.StereoCamera();
 
-    camera4 = new THREE.OrthographicCamera(window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / - 20 );
+    /*camera4 = new THREE.OrthographicCamera(window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / - 20 );
     camera4.position.x = 50;
     camera4.position.y = 50;
     camera4.position.z = 50;
-    camera4.lookAt(pause.position);
+    camera4.lookAt(pause.position);*/
         
     scene.add(camera1);
     scene.add(camera2);
-    scene.add(camera4);
+    //scene.add(camera4);
 
     camera = camera1;
     currentCameraNumber = 1;
-    camera_before_pause = 1;
+    //camera_before_pause = 1;
 }
 
+/*
 function remove_pause_camera(){
     switch(camera_before_pause){
         case 1:
@@ -380,12 +382,12 @@ function remove_pause_camera(){
         case 2:
             camera = camera2;
             break;
-        //    case 3:
+        //    case 4:
         //camera = stereoCamera;
         //break;
 
     }
-}
+}*/
 
 function checkMovement(delta) {
     'use strict';
@@ -420,11 +422,16 @@ function checkMovement(delta) {
 function createSpotlight() {
     'use strict';
     
+    body_spotlight_1 = new THREE.Group();
+    addSphere(body_spotlight_1,  first_step.position.x, first_step.position.y + 20, first_step.position.z, 3, 10, 10);
+    addCone(body_spotlight_1,  first_step.position.x, first_step.position.y + 17, first_step.position.z  )
+
+    scene.add(body_spotlight_1);
+
     spotlight_1 = new THREE.SpotLight ( 0xffffff, 5, 100, Math.PI, 10 );
     spotlight_1.position.set(0, 60,20 );
     spotlight_1.lookAt( first_step.position.x, first_step.position.y, first_step.position.z );
     spotlight_1.penumbra = .2;
-
     spotlight_1.castShadow = true
 
     var spotlighthelper = new THREE.SpotLightHelper(spotlight_1);
@@ -432,39 +439,49 @@ function createSpotlight() {
 
     scene.add(spotlight_1);
 
+    body_spotlight_2 = new THREE.Group();
+    addSphere(body_spotlight_2, 0, 60, 0, 3, 10, 10);
+    addCone(body_spotlight_1, 0, 57, 0 );
+
+    scene.add(body_spotlight_2);
+
     spotlight_2 = new THREE.SpotLight ( 0xffffff, 5, 100, Math.PI, 10 );
     spotlight_2.position.set(0, 60,0 );
     spotlight_2.lookAt( second_step.position.x, second_step.position.y, second_step.position.z );
     spotlight_2.penumbra = .2;
-
     spotlight_2.castShadow = true
 
-    var spotlighthelper = new THREE.SpotLightHelper(spotlight_2);
-    scene.add(spotlighthelper);
+    var spotlighthelper2 = new THREE.SpotLightHelper(spotlight_2);
+    scene.add(spotlighthelper2);
 
     scene.add(spotlight_2);
 
+    
+    body_spotlight_3 = new THREE.Group();
+    addSphere(body_spotlight_3, third_step.position.x, third_step.position.y + 24, third_step.position.z, 3, 10, 10);
+    addCone(body_spotlight_1, third_step.position.x, third_step.position.y + 21, third_step.position.z );
+
+    scene.add(body_spotlight_3);
 
     spotlight_3 = new THREE.SpotLight ( 0xffffff, 5, 100, Math.PI, 10 );
     spotlight_3.position.set(0, 60, -20 );
     spotlight_3.lookAt( third_step.position.x, third_step.position.y,third_step.position.z );
     spotlight_3.penumbra = .2;
-
     spotlight_3.castShadow = true
 
-    var spotlighthelper = new THREE.SpotLightHelper(spotlight_3);
-    scene.add(spotlighthelper);
+    var spotlighthelper3 = new THREE.SpotLightHelper(spotlight_3);
+    scene.add(spotlighthelper3);
 
     scene.add(spotlight_3);
 
 }
 
 function resetOrigami(){
-    paused = false;
+    ispause = false;
     pause.invisible = true;
     camera = camera1;
     currentCameraNumber = 1;
-    camera_before_pause=1;
+    //camera_before_pause=1;
     scene.remove(first_step);
     scene.remove(third_step);
     scene.remove(second_step);
@@ -485,7 +502,7 @@ function onResize() {
     
     renderer.setSize(window.innerWidth, window.innerHeight);
     
-    if(currentCameraNumber==3){
+    if(currentCameraNumber==2){
         if (window.innerHeight > 0 && window.innerWidth > 0) {
             camera.left = window.innerWidth / - 20;
             camera.right = window.innerWidth / 20;
@@ -493,16 +510,7 @@ function onResize() {
             camera.bottom = window.innerHeight / - 20;
             
         }
-    } else if(currentCameraNumber==4){
-        if (window.innerHeight > 0 && window.innerWidth > 0) {
-            camera.left = window.innerWidth / - 20;
-            camera.right = window.innerWidth / 20;
-            camera.top = window.innerHeight / 20;
-            camera.bottom = window.innerHeight / - 20;
-            
-        }
-    
-    }else{
+    } else{
         camera.aspect = window.innerWidth / window.innerHeight;
     }
 
@@ -549,35 +557,30 @@ function onKeyDown(e) {
             break;
 
         case 32:  //space
-            if(paused ==false){
-                camera_before_pause = currentCameraNumber;
-                camera = camera4;
-            }else{
-                remove_pause_camera();
-            }
-            paused = !paused;
-       
+            ispause = !ispause;
             pause.invisible = !pause.invisible;
-            console.log("invisivel", pause.invisible);
+            if(ispause==true){
+
+           
+                camera2.lookAt(pause.position);
+                camera2.lookAt(pause.position);
+            }else{
+
+                camera1.lookAt(scene.position);
+                camera2.lookAt(scene.position);
+            }
             break;
 
         case 49: //1
-            if(!paused){
-                currentCameraNumber=1;
-                camera=camera1;
-            }
+            currentCameraNumber=1;
+            camera=camera1;
             break;
         case 50: //2
-            if(!paused){
-                camera=camera2;
-                currentCameraNumber=2;
-            }
+            camera=camera2;
+            currentCameraNumber=2;
             break;
         case 51: //3
-            if(!paused){
-                camera=stereoCamera;
-                currentCameraNumber=3;
-            }else
+            if(ispause)
                 resetOrigami();
             break;
         
@@ -660,7 +663,16 @@ function render() {
     ////renderer.setViewport(size.width / 2, 0, size.width / 2, size.height);
     //renderer.render(scene, stereoCamera.cameraR);
     //renderer.setScissorTest(false);
+
+        
+       
+    renderer.autoClear = false;
+    renderer.clear();
     renderer.render(scene, camera);
+    if (ispause){
+        renderer.clearDepth();
+        renderer.render(pauseScene, camera); //???????pauseCamera em vez de camera
+    } 
 }
 
 function init() {
@@ -672,8 +684,8 @@ function init() {
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
+    document.body.appendChild( VRButton.createButton( renderer ) );
     
-    //document.body.appendChild( VRButton.createButton( renderer ) );
     //renderer.xr.enabled = true;
     
     createScene();
@@ -690,7 +702,7 @@ function animate() {
     var delta = clock.getDelta();
     
     // Update
-    if(!paused)
+    if(!ispause)
         checkMovement(delta);
 
     // Display
