@@ -11501,6 +11501,14 @@ Object.assign( THREE.BufferGeometry.prototype, THREE.EventDispatcher.prototype, 
 
 	},
 
+	setAttribute( name, attribute ) {
+
+		this.attributes[ name ] = attribute;
+
+		return this;
+
+	},
+
 	removeAttribute: function ( name ) {
 
 		delete this.attributes[ name ];

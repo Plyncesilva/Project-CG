@@ -95,32 +95,20 @@ function createGround(){
 function create_first_step(){
     'use strict'
 
-    var first_triangle = new THREE.Geometry(); 
-    var second_triangle = new THREE.Geometry(); 
+    let first_step_vertices = new Float32Array( [
+        // Each group of 3 numbers is a vertex
+        5, -5, 0,     0, 0, 10,     5, 5, 0,
+        5, -5, 0,     0, 0, -10,    5, 5, 0     
+    ])
 
-    var v1 = new THREE.Vector3(5,-5,0);
-    var v2 = new THREE.Vector3(0,0,10);
-    var v3 = new THREE.Vector3(5,5,0);
-    var v4 = new THREE.Vector3(0,0,-10);
+    let first_step_geometry = new THREE.BufferGeometry();
+    first_step_geometry.setAttribute("position", new THREE.BufferAttribute(first_step_vertices, 3) );
 
-    first_triangle.vertices.push(v1);
-    first_triangle.vertices.push(v2);
-    first_triangle.vertices.push(v3);
+    first_step_geometry.computeVertexNormals();
 
-    second_triangle.vertices.push(v1);
-    second_triangle.vertices.push(v3);
-    second_triangle.vertices.push(v4);
+    first_step = new THREE.Mesh(first_step_geometry, new THREE.MeshLambertMaterial({color: "blue", wireframe: false, side: THREE.DoubleSide}));
 
-    first_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
-    second_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
-    
-    var first_triangle_material = new THREE.Mesh( first_triangle, new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: false, side: THREE.DoubleSide }));
-    var second_triangle_material = new THREE.Mesh( second_triangle, new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: false,  side: THREE.DoubleSide }));
-
-    first_step = new THREE.Group();
     first_step.position.set(0, 40, 40);
-    first_step.add(first_triangle_material);
-    first_step.add(second_triangle_material);
 
     first_step.add(new THREE.AxisHelper(10));
     scene.add(first_step);
@@ -131,70 +119,29 @@ function create_first_step(){
 
 function create_second_step(){
 
-    var first_triangle = new THREE.Geometry(); 
-    var second_triangle = new THREE.Geometry(); 
-    var third_triangle = new THREE.Geometry(); 
-    var fourth_triangle = new THREE.Geometry(); 
-    var fifth_triangle = new THREE.Geometry(); 
-    var sixth_triangle = new THREE.Geometry(); 
-  
+    let second_step_vertices = new Float32Array( [
+        // Each group of 3 numbers is a vertex
+        0, 0, 0,     0, 5, 0,     0, 2.5, -5,
+        0, 2.5, -5,     0, 0, 0,    0, -2.5, -3,     
+        0, -2.5, -3,     0, 0, 0,    0, -10, 0,     
+        0, -2.5, 3,     0, 0, 0,    0, -10, 0,
+        0, 2.5, 5,      0, 0, 0,    0, -2.5, 3,     
+        0, 5, 0,      0, 0, 0,    0, 2.5, 5
+    ])
 
-    var v1 = new THREE.Vector3(0,5,0);
-    var v2 = new THREE.Vector3(0, 2.5, 5);
-    var v3 = new THREE.Vector3(0,-2.5, 3);
-    var v4 = new THREE.Vector3(0,-10,0);
-    var v5 = new THREE.Vector3(0, -2.5, -3);
-    var v6 = new THREE.Vector3(0, 2.5,-5);
-    var v7 = new THREE.Vector3(0,0,0);
+    let second_step_geometry = new THREE.BufferGeometry();
+    second_step_geometry.setAttribute("position", new THREE.BufferAttribute(second_step_vertices, 3) );
 
-    first_triangle.vertices.push(v7);
-    first_triangle.vertices.push(v1);
-    first_triangle.vertices.push(v6);
+    second_step_geometry.computeVertexNormals();
 
-    second_triangle.vertices.push(v6);
-    second_triangle.vertices.push(v7);
-    second_triangle.vertices.push(v5);
+    second_step = new THREE.Mesh(second_step_geometry, new THREE.MeshLambertMaterial({color: "red", wireframe: false, side: THREE.DoubleSide}));
 
-    third_triangle.vertices.push(v5);
-    third_triangle.vertices.push(v7);
-    third_triangle.vertices.push(v4);
-    
-    fourth_triangle.vertices.push(v4);
-    fourth_triangle.vertices.push(v7);
-    fourth_triangle.vertices.push(v3);
-    
-    fifth_triangle.vertices.push(v3);
-    fifth_triangle.vertices.push(v7);
-    fifth_triangle.vertices.push(v2);
+    second_step.position.set(0, 40, 40);
 
-    sixth_triangle.vertices.push(v2);
-    sixth_triangle.vertices.push(v7);
-    sixth_triangle.vertices.push(v1);
+    second_step.add(new THREE.AxisHelper(10));
+    scene.add(second_step);
 
-    first_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
-    second_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
-    third_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
-    fourth_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
-    fifth_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
-    sixth_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
-    
-    var first_triangle_material = new THREE.Mesh( first_triangle, new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: false, side: THREE.DoubleSide }));
-    var second_triangle_material = new THREE.Mesh( second_triangle, new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: false,  side: THREE.DoubleSide }));
-    var third_triangle_material = new THREE.Mesh( third_triangle, new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: false, side: THREE.DoubleSide }));
-    var fourth_triangle_material = new THREE.Mesh( fourth_triangle, new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: false,  side: THREE.DoubleSide }));
-    var fifth_triangle_material = new THREE.Mesh( fifth_triangle, new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: false, side: THREE.DoubleSide }));
-    var sixth_triangle_material = new THREE.Mesh( sixth_triangle, new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: false,  side: THREE.DoubleSide }));
-
-
-
-    second_step = new THREE.Group();
     second_step.position.set(0,40, 0);
-    second_step.add(first_triangle_material);
-    second_step.add(second_triangle_material);
-    second_step.add(third_triangle_material);
-    second_step.add(fourth_triangle_material);
-    second_step.add(fifth_triangle_material);
-    second_step.add(sixth_triangle_material);
 
     second_step.add(new THREE.AxisHelper(10));
     scene.add(second_step);
@@ -203,91 +150,26 @@ function create_second_step(){
 
 function create_third_step(){
 
-    var first_triangle = new THREE.Geometry(); 
-    var second_triangle = new THREE.Geometry(); 
-    var third_triangle = new THREE.Geometry(); 
-    var fourth_triangle = new THREE.Geometry(); 
-    var fifth_triangle = new THREE.Geometry(); 
-    var sixth_triangle = new THREE.Geometry(); 
-    var seventh_triangle = new THREE.Geometry(); 
-    var eighth_triangle = new THREE.Geometry(); 
-  
+    let third_step_vertices = new Float32Array( [
+        // Each group of 3 numbers is a vertex
+        0, 11, 7,     0, 13, 5,     0, 12, 3,
+        0, 12, 3,     0, 11, 5,    0, 2, 4,     
+        0, 3, 7,     0, 2, 4,    0, 11, 5,     
+        0, 2, 4,     0, 0, 4,    0, 3, 7,
+        0, 0, 0,      0, 0, 4,    0, 4, 4,     
+        0, 0, 0,      0, 5, -2,    0, 4, 4,
+        0, 0, -5,      0, 5, -2,    0, 0, 0,
+        0, 7, -9,      0, 0, -5,    0, 5, -2
+    ])
 
-    var v1 = new THREE.Vector3(0,11,7);
-    var v2 = new THREE.Vector3(0, 13, 5);
-    var v3 = new THREE.Vector3(0, 12, 3);
-    var v4 = new THREE.Vector3(0, 11, 5);
-    var v5 = new THREE.Vector3(0, 3, 7);
-    var v6 = new THREE.Vector3(0, 2, 4);
-    var v7 = new THREE.Vector3(0,0,4);
-    var v8 = new THREE.Vector3(0,0,0);
-    var v9 = new THREE.Vector3(0,5,-2);
-    var v10 = new THREE.Vector3(0,0,-5);
-    var v11 = new THREE.Vector3(0,7,-9);
-    var v12 = new THREE.Vector3(0,4,4);
+    let third_step_geometry = new THREE.BufferGeometry();
+    third_step_geometry.setAttribute("position", new THREE.BufferAttribute(third_step_vertices, 3) );
 
-    first_triangle.vertices.push(v1);
-    first_triangle.vertices.push(v2);
-    first_triangle.vertices.push(v3);
+    third_step_geometry.computeVertexNormals();
 
-    second_triangle.vertices.push(v3);
-    second_triangle.vertices.push(v4);
-    second_triangle.vertices.push(v6);
+    third_step = new THREE.Mesh(third_step_geometry, new THREE.MeshLambertMaterial({color: "yellow", wireframe: false, side: THREE.DoubleSide}));
 
-    third_triangle.vertices.push(v5);
-    third_triangle.vertices.push(v6);
-    third_triangle.vertices.push(v4);
-    
-    fourth_triangle.vertices.push(v6);
-    fourth_triangle.vertices.push(v7);
-    fourth_triangle.vertices.push(v5);
-    
-    fifth_triangle.vertices.push(v8);
-    fifth_triangle.vertices.push(v7);
-    fifth_triangle.vertices.push(v12);
-
-    sixth_triangle.vertices.push(v8);
-    sixth_triangle.vertices.push(v9);
-    sixth_triangle.vertices.push(v12);
-
-    seventh_triangle.vertices.push(v10);
-    seventh_triangle.vertices.push(v9);
-    seventh_triangle.vertices.push(v8);
-
-    eighth_triangle.vertices.push(v11);
-    eighth_triangle.vertices.push(v10);
-    eighth_triangle.vertices.push(v9);
-
-    first_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
-    second_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
-    third_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
-    fourth_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
-    fifth_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
-    sixth_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
-    seventh_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
-    eighth_triangle.faces.push( new THREE.Face3( 0, 1, 2) );
-
-    var first_triangle_material = new THREE.Mesh( first_triangle, new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false, side: THREE.DoubleSide }));
-    var second_triangle_material = new THREE.Mesh( second_triangle, new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false,  side: THREE.DoubleSide }));
-    var third_triangle_material = new THREE.Mesh( third_triangle, new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false, side: THREE.DoubleSide }));
-    var fourth_triangle_material = new THREE.Mesh( fourth_triangle, new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false,  side: THREE.DoubleSide }));
-    var fifth_triangle_material = new THREE.Mesh( fifth_triangle, new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false, side: THREE.DoubleSide }));
-    var sixth_triangle_material = new THREE.Mesh( sixth_triangle, new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false,  side: THREE.DoubleSide }));
-    var seventh_triangle_material = new THREE.Mesh( seventh_triangle, new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false,  side: THREE.DoubleSide }));
-    var eighth_triangle_material = new THREE.Mesh( eighth_triangle, new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false,  side: THREE.DoubleSide }));
-
-
-
-    third_step = new THREE.Group();
-    third_step.position.set(0,35, -40);
-    third_step.add(first_triangle_material);
-    third_step.add(second_triangle_material);
-    third_step.add(third_triangle_material);
-    third_step.add(fourth_triangle_material);
-    third_step.add(fifth_triangle_material);
-    third_step.add(sixth_triangle_material);
-    third_step.add(seventh_triangle_material);
-    third_step.add(eighth_triangle_material);
+    third_step.position.set(0, 35, -40);
 
     third_step.add(new THREE.AxisHelper(10));
     scene.add(third_step);
@@ -334,10 +216,10 @@ function createScene() {
     create_second_step();
     create_third_step();
 
-    createPauseScreen();
+    // createPauseScreen();
     
     createSpotlight();
-    createDirectionalLight();
+    // createDirectionalLight();
 
 }
 
