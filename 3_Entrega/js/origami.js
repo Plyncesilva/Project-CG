@@ -17,7 +17,7 @@ var rotateThirdStepLeft = false, rotateThirdStepRight = false;
 //origami
 var origami;
 
-var first_step, second_step, third_step;
+var first_step, second_step, third_step, ghost;
 
 
 var ground;
@@ -74,7 +74,7 @@ function addRectangle(obj, x, y, z, dimx, dimy, dimz, color_ground) {
     'use strict';
 
     var rectangle_material = new THREE.MeshLambertMaterial({ color: color_ground, wireframe: false }); 
-    geometry = new THREE.CubeGeometry(dimx, dimy, dimz);
+    geometry = new THREE.BoxGeometry(dimx, dimy, dimz);
     mesh = new THREE.Mesh(geometry, rectangle_material);
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -86,8 +86,8 @@ function createGround(){
 
     ground = new THREE.Group();
     
-    addRectangle(ground, 0,0,0, 1000, 10,1000, 0xD2B48C);
-    addRectangle(ground, 0,10,0, 150, 10, 150,0xFFFFFF );
+    addRectangle(ground, 0,0,0, 1000, 10,1000, 0x230062);
+    addRectangle(ground, 0,10,0, 150, 10, 150,0x00FFFF );
     addRectangle(ground, 0,20,0, 120, 10,120, 0xFF0000);
     scene.add(ground);
 }
@@ -113,7 +113,7 @@ function create_first_step(){
     ]);
 
 
-
+    
     let first_step_geometry = new THREE.BufferGeometry();
     first_step_geometry.setAttribute("position", new THREE.BufferAttribute(first_step_vertices, 3) );
     first_step_geometry.addAttribute( 'uv', new THREE.BufferAttribute( quad_uvs, 2 ));
@@ -122,12 +122,15 @@ function create_first_step(){
     first_step_geometry.computeVertexNormals();
 
     const texture = new THREE.TextureLoader().load('js/texture_sea.jpg');
-    first_step = new THREE.Mesh(first_step_geometry, new THREE.MeshLambertMaterial({wireframe: false, side: THREE.DoubleSide, map: texture}));
+    let material = new THREE.MeshLambertMaterial({wireframe: false, side: THREE.DoubleSide, map: texture});
+    material.shading = THREE.FlatShading;
+    material.shading = THREE.SmoothShading;
+    first_step_geometry.normalsNeedUpdate = true;
+    first_step = new THREE.Mesh(first_step_geometry, material);
 
     
     first_step.position.set(0, 40, 40);
 
-    first_step.add(new THREE.AxisHelper(10));
     scene.add(first_step);
 
 
@@ -162,14 +165,8 @@ function create_second_step(){
     const texture = new THREE.TextureLoader().load('js/texture_fire.jpg');
     second_step = new THREE.Mesh(second_step_geometry, new THREE.MeshLambertMaterial({map: texture, wireframe: false, side: THREE.DoubleSide}));
 
-    second_step.position.set(0, 40, 40);
-
-    second_step.add(new THREE.AxisHelper(10));
-    scene.add(second_step);
-
     second_step.position.set(0,40, 0);
 
-    second_step.add(new THREE.AxisHelper(10));
     scene.add(second_step);
 
 }
@@ -202,11 +199,10 @@ function create_third_step(){
     third_step_geometry.computeVertexNormals();
 
     const texture = new THREE.TextureLoader().load('js/texture_flowers.jpg');
-    third_step = new THREE.Mesh(third_step_geometry, new THREE.MeshLambertMaterial({color: texture, wireframe: false, side: THREE.DoubleSide}));
+    third_step = new THREE.Mesh(third_step_geometry, new THREE.MeshLambertMaterial({map: texture, wireframe: false, side: THREE.DoubleSide}));
 
     third_step.position.set(0, 35, -40);
 
-    third_step.add(new THREE.AxisHelper(10));
     scene.add(third_step);
 
 }
@@ -214,7 +210,7 @@ function create_third_step(){
 function createDirectionalLight(){
     // directional light
     dlight = new THREE.DirectionalLight( 0xFFFFFF, 5 );
-    dlight.position.set( 0, 100, 0 );
+    dlight.position.set( 40, 100, 0 );
     dlight.target.position.set( 0, 0, 0 );
     scene.add(dlight);
     scene.add(dlight.target);
@@ -233,7 +229,7 @@ function createPauseScreen(){
 
     pause = new THREE.Mesh(geometry, material);
     pause.invisible = false;
-    pause.position.set(20,30,0);
+    pause.position.set(90, 60, 0);
     pauseScene.add(pause);
     
 }
@@ -251,10 +247,10 @@ function createScene() {
     create_second_step();
     create_third_step();
 
-    // createPauseScreen();
+    createPauseScreen();
     
     createSpotlight();
-    // createDirectionalLight();
+    createDirectionalLight();
 
 }
 
@@ -265,7 +261,7 @@ function createCameras() {
         window.innerWidth / window.innerHeight,
         1,
         1000);
-    camera1.position.set(100,70,0);
+    camera1.position.set(150,60,0);
     camera1.lookAt(scene.position);
     
     camera2 = new THREE.OrthographicCamera(window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / -20 );    
@@ -346,8 +342,10 @@ function createSpotlight() {
     scene.add(body_spotlight_1);
 
     spotlight_1 = new THREE.SpotLight ( 0xffffff, 5, 100, Math.PI, 10 );
-    spotlight_1.position.set(0, 60,20 );
+    spotlight_1.position.set(30, 60,20 );
     spotlight_1.lookAt( first_step.position.x, first_step.position.y, first_step.position.z );
+    spotlight_1.target = first_step;
+
     spotlight_1.penumbra = .2;
     spotlight_1.castShadow = true
 
@@ -355,6 +353,7 @@ function createSpotlight() {
     scene.add(spotlighthelper);
 
     scene.add(spotlight_1);
+    scene.add(spotlight_1.target);
 
     body_spotlight_2 = new THREE.Group();
     addSphere(body_spotlight_2, 0, 60, 0, 3, 10, 10);
@@ -363,7 +362,7 @@ function createSpotlight() {
     scene.add(body_spotlight_2);
 
     spotlight_2 = new THREE.SpotLight ( 0xffffff, 5, 100, Math.PI, 10 );
-    spotlight_2.position.set(0, 60,0 );
+    spotlight_2.position.set(30, 60,0 );
     spotlight_2.lookAt( second_step.position.x, second_step.position.y, second_step.position.z );
     spotlight_2.penumbra = .2;
     spotlight_2.castShadow = true
@@ -381,7 +380,7 @@ function createSpotlight() {
     scene.add(body_spotlight_3);
 
     spotlight_3 = new THREE.SpotLight ( 0xffffff, 5, 100, Math.PI, 10 );
-    spotlight_3.position.set(0, 60, -20 );
+    spotlight_3.position.set(30, 60, -20 );
     spotlight_3.lookAt( third_step.position.x, third_step.position.y,third_step.position.z );
     spotlight_3.penumbra = .2;
     spotlight_3.castShadow = true
@@ -603,7 +602,7 @@ function init() {
     document.body.appendChild(renderer.domElement);
     document.body.appendChild( VRButton.createButton( renderer ) );
     
-    //renderer.xr.enabled = true;
+    renderer.xr.enabled = true;
     
     createScene();
     createCameras();
