@@ -353,19 +353,22 @@ function createSpotlight() {
 
     scene.add(spotlight_1);
 
+    //spotlight_2
     body_spotlight_2 = new THREE.Group();
     addSphere(body_spotlight_2, 0, 60, 0, 3, 10, 10);
-    addCone(body_spotlight_1, 0, 57, 0 );
+    addCone(body_spotlight_2, 0, 57, 0 );
 
     scene.add(body_spotlight_2);
 
-    spotlight_2 = new THREE.SpotLight ( 0xffffff, 5, 100, Math.PI, 10 );
+    spotlight_2 = new THREE.SpotLight ( 0xffffff);
+    spotlight_2.intensity = 5;
+    spotlight_2.distance = 200;
+    spotlight_2.angle = Math.PI/5;
     spotlight_2.position.set(30, 60,0 );
-    spotlight_2.lookAt( second_step.position.x, second_step.position.y, second_step.position.z );
     spotlight_2.target.position.set(0, 40, 0);
     spotlight_2.target.updateMatrixWorld();
     scene.add(spotlight_2.target);
-    spotlight_2.penumbra = .2;
+
     spotlight_2.castShadow = true
 
     var spotlighthelper2 = new THREE.SpotLightHelper(spotlight_2);
@@ -376,13 +379,15 @@ function createSpotlight() {
     
     body_spotlight_3 = new THREE.Group();
     addSphere(body_spotlight_3, third_step.position.x, third_step.position.y + 24, third_step.position.z, 3, 10, 10);
-    addCone(body_spotlight_1, third_step.position.x, third_step.position.y + 21, third_step.position.z );
+    addCone(body_spotlight_3, third_step.position.x, third_step.position.y + 21, third_step.position.z );
 
     scene.add(body_spotlight_3);
 
-    spotlight_3 = new THREE.SpotLight ( 0xffffff, 5, 100, Math.PI, 10 );
+    spotlight_3 = new THREE.SpotLight ( 0xffffff);
+    spotlight_3.intensity = 5;
+    spotlight_3.distance = 300;
+    spotlight_3.angle = Math.PI/6;
     spotlight_3.position.set(30, 60, -20 );
-    spotlight_3.lookAt( third_step.position.x, third_step.position.y,third_step.position.z );
     spotlight_3.target.position.set(0, 40, -40);
     spotlight_3.target.updateMatrixWorld();
     scene.add(spotlight_3.target);
