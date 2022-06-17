@@ -95,19 +95,36 @@ function createGround(){
 function create_first_step(){
     'use strict'
 
+    let quad_uvs = new Float32Array( [
+        0.0, 0.0,
+        1.0, 0.0,
+        1.0, 1.0,
+        0.0, 1.0
+    ]);
+
     let first_step_vertices = new Float32Array( [
         // Each group of 3 numbers is a vertex
         5, -5, 0,     0, 0, 10,     5, 5, 0,
         5, -5, 0,     0, 0, -10,    5, 5, 0     
     ])
 
+    let quad_indices = new Uint32Array( [
+        0, 1, 2, 0, 3, 2
+    ]);
+
+
+
     let first_step_geometry = new THREE.BufferGeometry();
     first_step_geometry.setAttribute("position", new THREE.BufferAttribute(first_step_vertices, 3) );
+    first_step_geometry.addAttribute( 'uv', new THREE.BufferAttribute( quad_uvs, 2 ));
+    // first_step_geometry.setIndex( new THREE.BufferAttribute( quad_indices, 2) );
 
     first_step_geometry.computeVertexNormals();
 
-    first_step = new THREE.Mesh(first_step_geometry, new THREE.MeshLambertMaterial({color: "blue", wireframe: false, side: THREE.DoubleSide}));
+    const texture = new THREE.TextureLoader().load('js/texture_sea.jpg');
+    first_step = new THREE.Mesh(first_step_geometry, new THREE.MeshLambertMaterial({wireframe: false, side: THREE.DoubleSide, map: texture}));
 
+    
     first_step.position.set(0, 40, 40);
 
     first_step.add(new THREE.AxisHelper(10));
@@ -118,6 +135,13 @@ function create_first_step(){
 
 
 function create_second_step(){
+
+    let quad_uvs = new Float32Array( [
+        0.0, 0.0,
+        1.0, 0.0,
+        1.0, 1.0,
+        0.0, 1.0
+    ]);
 
     let second_step_vertices = new Float32Array( [
         // Each group of 3 numbers is a vertex
@@ -131,10 +155,12 @@ function create_second_step(){
 
     let second_step_geometry = new THREE.BufferGeometry();
     second_step_geometry.setAttribute("position", new THREE.BufferAttribute(second_step_vertices, 3) );
+    second_step_geometry.addAttribute( 'uv', new THREE.BufferAttribute( quad_uvs, 2 ));
 
     second_step_geometry.computeVertexNormals();
 
-    second_step = new THREE.Mesh(second_step_geometry, new THREE.MeshLambertMaterial({color: "red", wireframe: false, side: THREE.DoubleSide}));
+    const texture = new THREE.TextureLoader().load('js/texture_fire.jpg');
+    second_step = new THREE.Mesh(second_step_geometry, new THREE.MeshLambertMaterial({map: texture, wireframe: false, side: THREE.DoubleSide}));
 
     second_step.position.set(0, 40, 40);
 
@@ -150,6 +176,13 @@ function create_second_step(){
 
 function create_third_step(){
 
+    let quad_uvs = new Float32Array( [
+        0.0, 0.0,
+        1.0, 0.0,
+        1.0, 1.0,
+        0.0, 1.0
+    ]);
+
     let third_step_vertices = new Float32Array( [
         // Each group of 3 numbers is a vertex
         0, 11, 7,     0, 13, 5,     0, 12, 3,
@@ -164,10 +197,12 @@ function create_third_step(){
 
     let third_step_geometry = new THREE.BufferGeometry();
     third_step_geometry.setAttribute("position", new THREE.BufferAttribute(third_step_vertices, 3) );
+    third_step_geometry.setAttribute( 'uv', new THREE.BufferAttribute( quad_uvs, 2 ));
 
     third_step_geometry.computeVertexNormals();
 
-    third_step = new THREE.Mesh(third_step_geometry, new THREE.MeshLambertMaterial({color: "yellow", wireframe: false, side: THREE.DoubleSide}));
+    const texture = new THREE.TextureLoader().load('js/texture_flowers.jpg');
+    third_step = new THREE.Mesh(third_step_geometry, new THREE.MeshLambertMaterial({color: texture, wireframe: false, side: THREE.DoubleSide}));
 
     third_step.position.set(0, 35, -40);
 
