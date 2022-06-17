@@ -3,7 +3,7 @@
 //const THREE = require("./three");
 
 var camera, camera1, camera2, stereoCamera;
-var clock, currentCameraNumber, camera_before_pause;
+var clock, currentCameraNumber;
 var scene, pauseScene, renderer;
 var geometry, mesh;
 
@@ -19,9 +19,7 @@ var origami;
 
 var first_step, second_step, third_step, ghost;
 
-
 var ground;
-
 
 //diretional light
 var dlight;
@@ -43,20 +41,6 @@ function addCone(obj, x, y, z) {
     
     obj.add(mesh)
 }
-
-
-function addCylinder(obj, x, y, z, radiusTop, radiusBot, height) {
-    'use strict';
-    
-    var cylinder_material = new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true });
-    geometry = new THREE.CylinderGeometry(radiusTop, radiusBot, height,10);
-    mesh = new THREE.Mesh(geometry, cylinder_material);
-    
-    mesh.position.set(x, y, z);
-    
-    obj.add(mesh)
-}
-
 
 function addSphere(obj, x, y, z, dimx, dimy, dimz) {
     'use strict';
@@ -220,7 +204,7 @@ function createPauseScreen(){
     pauseScene = new THREE.Scene();
     
     pauseScene.add(new THREE.AxisHelper(10));
-    geometry = new THREE.PlaneGeometry( 100, 200, 100);
+    geometry = new THREE.PlaneGeometry( 50, 50, 50);
 
     var texture = new THREE.TextureLoader().load('js/pause.png');
 
@@ -228,7 +212,8 @@ function createPauseScreen(){
 
     pause = new THREE.Mesh(geometry, material);
     pause.invisible = false;
-    pause.position.set(90, 60, 0);
+    pause.position.set(0, 0, 0);
+    pause.rotateY(Math.PI/2);
     pauseScene.add(pause);
     
 }
@@ -269,37 +254,13 @@ function createCameras() {
     camera2.lookAt(scene.position);
 
     stereoCamera = new THREE.StereoCamera();
-
-    /*camera4 = new THREE.OrthographicCamera(window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / - 20 );
-    camera4.position.x = 50;
-    camera4.position.y = 50;
-    camera4.position.z = 50;
-    camera4.lookAt(pause.position);*/
         
     scene.add(camera1);
     scene.add(camera2);
-    //scene.add(camera4);
 
     camera = camera1;
     currentCameraNumber = 1;
-    //camera_before_pause = 1;
 }
-
-/*
-function remove_pause_camera(){
-    switch(camera_before_pause){
-        case 1:
-            camera = camera1;
-            break;
-        case 2:
-            camera = camera2;
-            break;
-        //    case 4:
-        //camera = stereoCamera;
-        //break;
-
-    }
-}*/
 
 function checkMovement(delta) {
     'use strict';
@@ -327,7 +288,6 @@ function checkMovement(delta) {
     if(rotateThirdStepRight){
         third_step.rotateY(-delta);
     }
-
 
 }
 
@@ -376,7 +336,7 @@ function createSpotlight() {
 
     scene.add(spotlight_2);
 
-    
+    //spotlight_3
     body_spotlight_3 = new THREE.Group();
     addSphere(body_spotlight_3, third_step.position.x, third_step.position.y + 24, third_step.position.z, 3, 10, 10);
     addCone(body_spotlight_3, third_step.position.x, third_step.position.y + 21, third_step.position.z );
@@ -485,12 +445,9 @@ function onKeyDown(e) {
             ispause = !ispause;
             pause.invisible = !pause.invisible;
             if(ispause==true){
-
-           
-                camera2.lookAt(pause.position);
+                camera1.lookAt(pause.position);
                 camera2.lookAt(pause.position);
             }else{
-
                 camera1.lookAt(scene.position);
                 camera2.lookAt(scene.position);
             }
@@ -597,7 +554,7 @@ function render() {
     renderer.render(scene, camera);
     if (ispause){
         renderer.clearDepth();
-        renderer.render(pauseScene, camera); //???????pauseCamera em vez de camera
+        renderer.render(pauseScene, camera); 
     } 
 }
 
