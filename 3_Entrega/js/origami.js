@@ -104,8 +104,8 @@ function create_first_step(){
 
     let first_step_vertices = new Float32Array( [
         // Each group of 3 numbers is a vertex
-        5, -5, 0,     0, 0, 10,     5, 5, 0,
-        5, -5, 0,     0, 0, -10,    5, 5, 0     
+        4, -8, 0,     0, 0, 8,     4, 8, 0,
+        4, -8, 0,     0, 0, -8,    4, 8, 0     
     ])
 
     let quad_indices = new Uint32Array( [
@@ -123,8 +123,7 @@ function create_first_step(){
 
     const texture = new THREE.TextureLoader().load('js/texture_sea.jpg');
     let material = new THREE.MeshLambertMaterial({wireframe: false, side: THREE.DoubleSide, map: texture});
-    material.shading = THREE.FlatShading;
-    material.shading = THREE.SmoothShading;
+   
     first_step_geometry.normalsNeedUpdate = true;
     first_step = new THREE.Mesh(first_step_geometry, material);
 
@@ -264,9 +263,9 @@ function createCameras() {
     camera1.position.set(150,60,0);
     camera1.lookAt(scene.position);
     
-    camera2 = new THREE.OrthographicCamera(window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / -20 );    
+    camera2 = new THREE.OrthographicCamera(window.innerWidth / - 10, window.innerWidth / 10, window.innerHeight / 10, window.innerHeight / -10 );    
 
-    camera2.position.set(0, 50, 0);
+    camera2.position.set(200, 20, 0);
     camera2.lookAt(scene.position);
 
     stereoCamera = new THREE.StereoCamera();
@@ -341,18 +340,16 @@ function createSpotlight() {
 
     scene.add(body_spotlight_1);
 
-    spotlight_1 = new THREE.SpotLight ( 0xffffff, 5, 100, Math.PI, 10 );
-    spotlight_1.position.set(30, 60,20 );
-    spotlight_1.lookAt( first_step.position.x, first_step.position.y, first_step.position.z );
+    spotlight_1 = new THREE.SpotLight (0xffffff);
+    spotlight_1.intensity = 5;
+    spotlight_1.distance = 300;
+    spotlight_1.angle = Math.PI/6;
+    spotlight_1.position.set(20, 50,40 );
     spotlight_1.target.position.set(0, 40, 40);
     spotlight_1.target.updateMatrixWorld();
     scene.add(spotlight_1.target);
 
-    spotlight_1.penumbra = .2;
     spotlight_1.castShadow = true
-
-    var spotlighthelper = new THREE.SpotLightHelper(spotlight_1);
-    scene.add(spotlighthelper);
 
     scene.add(spotlight_1);
 
@@ -571,21 +568,22 @@ function onKeyUp(e) {
 
 function render() {
     'use strict';
-    //stereoCamera.update();
+    // stereoCamera.update(stereoCamera.cameraL);
+    // stereoCamera.update(stereoCamera.cameraR);
     
-    //const size = new THREE.Vector2();
-    //renderer.getSize(size);
+    // const size = new THREE.Vector2();
+    // renderer.getSize(size);
 
-    //renderer.setScissorTest(true);
+    // renderer.setScissorTest(true);
     
-    //renderer.setScissor(0, 0, size.width / 2, si//ze.height);
-    //renderer.setViewport(0, 0, size.width / 2, s//ize.height);
-    //renderer.render(scene, stereoCamera.cameraL)//;
-//
-    ////renderer.setScissor(size.width / 2, 0, size.width / 2, size.height);
-    ////renderer.setViewport(size.width / 2, 0, size.width / 2, size.height);
-    //renderer.render(scene, stereoCamera.cameraR);
-    //renderer.setScissorTest(false);
+    // renderer.setScissor(0, 0, size.width / 2, size.height);
+    // renderer.setViewport(0, 0, size.width / 2, size.height);
+    // renderer.render(scene, stereoCamera.cameraL);
+
+    // renderer.setScissor(size.width / 2, 0, size.width / 2, size.height);
+    // renderer.setViewport(size.width / 2, 0, size.width / 2, size.height);
+    // renderer.render(scene, stereoCamera.cameraR);
+    // renderer.setScissorTest(false);
 
         
        
