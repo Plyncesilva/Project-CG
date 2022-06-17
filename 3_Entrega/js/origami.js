@@ -7,6 +7,10 @@ var clock, currentCameraNumber;
 var scene, pauseScene, renderer;
 var geometry, mesh;
 
+var first_step_materials, second_step_materials, third_step_materials;
+var activeMaterial = 1;
+var previousMaterial = -1;
+
 var pause;
 var ispause = false;
 
@@ -91,26 +95,14 @@ function create_first_step(){
         4, -8, 0,     0, 0, 8,     4, 8, 0,
         4, -8, 0,     0, 0, -8,    4, 8, 0     
     ])
-
-    let quad_indices = new Uint32Array( [
-        0, 1, 2, 0, 3, 2
-    ]);
-
-
     
     let first_step_geometry = new THREE.BufferGeometry();
     first_step_geometry.setAttribute("position", new THREE.BufferAttribute(first_step_vertices, 3) );
     first_step_geometry.addAttribute( 'uv', new THREE.BufferAttribute( quad_uvs, 2 ));
-    // first_step_geometry.setIndex( new THREE.BufferAttribute( quad_indices, 2) );
 
     first_step_geometry.computeVertexNormals();
 
-    const texture = new THREE.TextureLoader().load('js/texture_sea.jpg');
-    let material = new THREE.MeshLambertMaterial({wireframe: false, side: THREE.DoubleSide, map: texture});
-   
-    first_step_geometry.normalsNeedUpdate = true;
-    first_step = new THREE.Mesh(first_step_geometry, material);
-
+    first_step = new THREE.Mesh(first_step_geometry, first_step_materials[activeMaterial]);
     
     first_step.position.set(0, 40, 40);
 
@@ -145,8 +137,7 @@ function create_second_step(){
 
     second_step_geometry.computeVertexNormals();
 
-    const texture = new THREE.TextureLoader().load('js/texture_fire.jpg');
-    second_step = new THREE.Mesh(second_step_geometry, new THREE.MeshLambertMaterial({map: texture, wireframe: false, side: THREE.DoubleSide}));
+    second_step = new THREE.Mesh(second_step_geometry, second_step_materials[activeMaterial]);
 
     second_step.position.set(0,40, 0);
 
@@ -181,8 +172,7 @@ function create_third_step(){
 
     third_step_geometry.computeVertexNormals();
 
-    const texture = new THREE.TextureLoader().load('js/texture_flowers.jpg');
-    third_step = new THREE.Mesh(third_step_geometry, new THREE.MeshLambertMaterial({map: texture, wireframe: false, side: THREE.DoubleSide}));
+    third_step = new THREE.Mesh(third_step_geometry, third_step_materials[activeMaterial]);
 
     third_step.position.set(0, 35, -40);
 
@@ -218,6 +208,28 @@ function createPauseScreen(){
     
 }
 
+function createMaterials(){
+    first_step_materials = new Array(3);
+    second_step_materials = new Array(3);
+    third_step_materials = new Array(3);
+
+    const first_step_texture = new THREE.TextureLoader().load('js/texture_sea.jpg');
+    first_step_materials[0] = new THREE.MeshBasicMaterial({map: first_step_texture, wireframe: false, side: THREE.DoubleSide});
+    first_step_materials[1] = new THREE.MeshLambertMaterial({map: first_step_texture, wireframe: false, side: THREE.DoubleSide});
+    first_step_materials[2] = new THREE.MeshPhongMaterial({map: first_step_texture, wireframe: false, side: THREE.DoubleSide});
+
+    const second_step_texture = new THREE.TextureLoader().load('js/texture_fire.jpg');
+    second_step_materials[0] = new THREE.MeshBasicMaterial({map: second_step_texture, wireframe: false, side: THREE.DoubleSide});
+    second_step_materials[1] = new THREE.MeshLambertMaterial({map: second_step_texture, wireframe: false, side: THREE.DoubleSide});
+    second_step_materials[2] = new THREE.MeshPhongMaterial({map: second_step_texture, wireframe: false, side: THREE.DoubleSide});
+
+    const third_step_texture = new THREE.TextureLoader().load('js/texture_flowers.jpg');
+    third_step_materials[0] = new THREE.MeshBasicMaterial({map: third_step_texture, wireframe: false, side: THREE.DoubleSide});
+    third_step_materials[1] = new THREE.MeshLambertMaterial({map: third_step_texture, wireframe: false, side: THREE.DoubleSide});
+    third_step_materials[2] = new THREE.MeshPhongMaterial({map: third_step_texture, wireframe: false, side: THREE.DoubleSide});
+    
+}
+
 function createScene() {
     'use strict';
     
@@ -226,6 +238,8 @@ function createScene() {
     scene.add(new THREE.AxisHelper(10));
     
     createGround();
+
+    createMaterials();
 
     create_first_step();
     create_second_step();
@@ -331,9 +345,6 @@ function createSpotlight() {
 
     spotlight_2.castShadow = true
 
-    var spotlighthelper2 = new THREE.SpotLightHelper(spotlight_2);
-    scene.add(spotlighthelper2);
-
     scene.add(spotlight_2);
 
     //spotlight_3
@@ -354,9 +365,6 @@ function createSpotlight() {
     spotlight_3.penumbra = .2;
     spotlight_3.castShadow = true
 
-    var spotlighthelper3 = new THREE.SpotLightHelper(spotlight_3);
-    scene.add(spotlighthelper3);
-
     scene.add(spotlight_3);
 
 }
@@ -366,7 +374,7 @@ function resetOrigami(){
     pause.invisible = true;
     camera = camera1;
     currentCameraNumber = 1;
-    //camera_before_pause=1;
+
     scene.remove(first_step);
     scene.remove(third_step);
     scene.remove(second_step);
@@ -375,11 +383,14 @@ function resetOrigami(){
     scene.remove(spotlight_3);
     scene.remove(dlight);
 
+    activeMaterial = 1;
+
     createSpotlight();
     createDirectionalLight();
     create_first_step();
     create_second_step();
     create_third_step();
+
 }
 
 function onResize() {
@@ -389,10 +400,10 @@ function onResize() {
     
     if(currentCameraNumber==2){
         if (window.innerHeight > 0 && window.innerWidth > 0) {
-            camera.left = window.innerWidth / - 20;
-            camera.right = window.innerWidth / 20;
-            camera.top = window.innerHeight / 20;
-            camera.bottom = window.innerHeight / - 20;
+            camera.left = window.innerWidth / - 10;
+            camera.right = window.innerWidth / 10;
+            camera.top = window.innerHeight / 10;
+            camera.bottom = window.innerHeight / - 10;
             
         }
     } else{
@@ -400,6 +411,33 @@ function onResize() {
     }
 
     camera.updateProjectionMatrix();
+}
+
+function switchMaterial_A() {
+    
+    if (activeMaterial == 1) {
+        activeMaterial = 2;
+    }
+    else{
+        activeMaterial = 1;
+    }    
+}   
+
+function switchMaterial_S() {
+    if (activeMaterial == 0){
+        activeMaterial = previousMaterial;
+        previousMaterial = activeMaterial;
+    }
+    else{
+        previousMaterial = activeMaterial;
+        activeMaterial = 0;
+    }
+}
+
+function updateMaterials() {
+    first_step.material = first_step_materials[activeMaterial];
+    second_step.material = second_step_materials[activeMaterial];
+    third_step.material = third_step_materials[activeMaterial];
 }
 
 function onKeyDown(e) {
@@ -436,9 +474,16 @@ function onKeyDown(e) {
             rotateThirdStepRight = true;
             break;
 
-
         case 65: //A
         case 97: //a
+            switchMaterial_A();
+            updateMaterials();
+            break;
+
+        case 83: //S
+        case 115: //s
+            switchMaterial_S();
+            updateMaterials();
             break;
 
         case 32:  //space
